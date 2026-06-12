@@ -326,6 +326,38 @@ textarea {
   height: 17px;
 }
 
+.wellness-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border: 1px solid #cfe5dc;
+  border-left: 4px solid #3c8d79;
+  border-radius: 6px;
+  background: #f2f9f6;
+}
+
+.wellness-banner svg {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  color: #16756f;
+}
+
+.wellness-banner strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #24534a;
+  font-size: 0.88rem;
+}
+
+.wellness-banner p {
+  color: #49645d;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
 .profile-pill {
   display: flex;
   align-items: center;
@@ -705,6 +737,97 @@ textarea {
   background: #dfe8ed;
 }
 
+.healthy-living {
+  margin-top: 18px;
+  padding: 22px;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(23, 33, 43, 0.045);
+}
+
+.healthy-living-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.healthy-living-heading h2 {
+  margin-top: 5px;
+  font-size: 1.25rem;
+}
+
+.healthy-living-heading > p {
+  max-width: 410px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.habit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid #e4ebef;
+}
+
+.habit-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 18px 16px;
+  border-right: 1px solid #e4ebef;
+}
+
+.habit-item:first-child {
+  padding-left: 0;
+}
+
+.habit-item:last-child {
+  padding-right: 0;
+  border-right: 0;
+}
+
+.habit-item svg {
+  width: 25px;
+  height: 25px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #e9f4f1;
+  color: #16756f;
+}
+
+.habit-item h3 {
+  margin: 1px 0 5px;
+  font-size: 0.92rem;
+}
+
+.habit-item p {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 24px;
+  padding: 18px 2px 0;
+  border-top: 1px solid #dce5ea;
+  font-size: 0.78rem;
+}
+
+.app-footer p {
+  max-width: 680px;
+}
+
+.app-footer span {
+  flex: 0 0 auto;
+  color: #52616c;
+  font-weight: 750;
+}
+
 @media (max-width: 860px) {
   .topbar,
   .appointment-card {
@@ -726,6 +849,32 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .healthy-living-heading,
+  .app-footer {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .healthy-living-heading > p {
+    text-align: left;
+  }
+
+  .habit-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .habit-item,
+  .habit-item:first-child,
+  .habit-item:last-child {
+    padding: 16px;
+    border-right: 0;
+    border-bottom: 1px solid #e4ebef;
+  }
+
+  .habit-item:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
   .app-shell {
     width: min(100% - 20px, 1180px);
     padding-top: 16px;
@@ -734,5 +883,19 @@ textarea {
   .app-nav a {
     min-height: 38px;
     padding: 0 11px;
+  }
+}
+
+@media (max-width: 560px) {
+  .habit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-item:nth-last-child(2) {
+    border-bottom: 1px solid #e4ebef;
+  }
+
+  .wellness-banner {
+    align-items: flex-start;
   }
 }

@@ -1,5 +1,6 @@
 import AppointmentList from '../components/AppointmentList.jsx';
 import DashboardWelcome from '../components/DashboardWelcome.jsx';
+import HealthyLivingGuide from '../components/HealthyLivingGuide.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useAppointments, useClinicMutation, useDoctors, useUsers } from '../hooks/useClinicQueries.js';
 import { api } from '../api.js';
@@ -31,6 +32,7 @@ export default function AppointmentsPage() {
         onCancel={(id) => cancelMutation.mutate(id)}
         onComplete={(id) => completeMutation.mutate(id)}
       />
+      <HealthyLivingGuide />
     </>
   );
 }

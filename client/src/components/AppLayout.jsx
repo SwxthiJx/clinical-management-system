@@ -2,6 +2,7 @@ import { Activity, CalendarClock, CalendarPlus, ClipboardList, LogOut, ShieldChe
 import { NavLink, Outlet } from 'react-router-dom';
 import { hospitalName } from '../constants.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import WellnessBanner from './WellnessBanner.jsx';
 
 const roleIcons = { patient: UserRound, doctor: Stethoscope, admin: ShieldCheck };
 
@@ -33,7 +34,12 @@ export default function AppLayout() {
         {user.role === 'admin' && <NavLink to="/admin"><ShieldCheck aria-hidden="true" />Admin</NavLink>}
         <NavLink to="/security"><UserRound aria-hidden="true" />Security</NavLink>
       </nav>
+      <WellnessBanner role={user.role} />
       <Outlet />
+      <footer className="app-footer">
+        <p>Care for your body, make room for rest, and seek professional advice when something feels wrong.</p>
+        <span>{hospitalName}</span>
+      </footer>
     </main>
   );
 }
