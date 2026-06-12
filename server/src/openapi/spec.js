@@ -257,7 +257,7 @@ export const openApiSpec = {
       },
       post: {
         tags: ['Appointments'],
-        summary: 'Book an appointment',
+        summary: 'Book an appointment and send confirmation notifications',
         security: [{ cookieAuth: [], csrf: [] }],
         responses: { 201: { description: 'Appointment booked' }, 409: { description: 'Conflict' } }
       }
@@ -277,7 +277,7 @@ export const openApiSpec = {
     '/appointments/{id}/status': {
       patch: {
         tags: ['Appointments'],
-        summary: 'Update an appointment status',
+        summary: 'Update an appointment status and notify participants',
         security: [{ cookieAuth: [], csrf: [] }],
         parameters: [
           { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
@@ -288,7 +288,7 @@ export const openApiSpec = {
     '/appointments/{id}/cancel': {
       patch: {
         tags: ['Appointments'],
-        summary: 'Cancel an appointment',
+        summary: 'Cancel an appointment and notify participants',
         security: [{ cookieAuth: [], csrf: [] }],
         parameters: [
           { in: 'path', name: 'id', required: true, schema: { type: 'string' } }

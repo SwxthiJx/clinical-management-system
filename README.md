@@ -20,6 +20,7 @@ A full-stack appointment management system for patients, doctors, and administra
 - Request validation and API rate limiting
 - Doctor availability management
 - Patient-visible doctor profiles with education, experience, languages, and clinical interests
+- Appointment confirmation, cancellation, completion, and reminder emails
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability
 - Schedule exceptions for blocked doctor dates
@@ -193,6 +194,21 @@ JWT_SECRET=a-unique-random-secret-with-at-least-32-characters
 If the frontend and API use the same site, prefer `COOKIE_SAME_SITE=lax`.
 Configure the `SMTP_*` variables to deliver verification and password-reset emails.
 Never commit `server/.env`.
+
+Appointment notifications use the same SMTP configuration. Booking confirmations,
+cancellations, and completion notices are sent to both the patient and doctor.
+The reminder scheduler sends one reminder per booked appointment within the
+configured lead window.
+
+```env
+ENABLE_APPOINTMENT_REMINDERS=true
+APPOINTMENT_REMINDER_HOURS=24
+REMINDER_SCAN_INTERVAL_MINUTES=15
+NOTIFICATION_TIME_ZONE=Asia/Kolkata
+```
+
+When SMTP is not configured in development, notification previews are written as
+structured development logs. In production, configure SMTP before enabling reminders.
 
 The Atlas database password previously used during development should be rotated in
 MongoDB Atlas before deployment, then updated only in the deployment secret manager

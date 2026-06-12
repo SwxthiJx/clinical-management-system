@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { logger } from '../utils/logger.js';
 
 function createTransport() {
   if (!process.env.SMTP_HOST) {
@@ -22,22 +23,25 @@ export function isMailConfigured() {
   return Boolean(process.env.SMTP_HOST);
 }
 
-async function sendMail({ to, subject, text }) {
+export async function sendMail({ to, subject, text }) {
   const transport = createTransport();
 
   if (!transport) {
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[development email] To: ${to}\nSubject: ${subject}\n${text}`);
+      logger.info('Development email generated', { to, subject, text });
+      return { delivered: true, mode: 'development' };
     }
-    return;
+    logger.warn('Email delivery skipped because SMTP is not configured', { to, subject });
+    return { delivered: false, mode: 'unconfigured' };
   }
 
-  await transport.sendMail({
+  const info = await transport.sendMail({
     from: process.env.SMTP_FROM || 'Aarogya Care Hospital <no-reply@clinic.local>',
     to,
     subject,
     text
   });
+  return { delivered: true, mode: 'smtp', messageId: info.messageId };
 }
 
 export async function sendVerificationEmail(user, token) {

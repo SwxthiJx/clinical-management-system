@@ -40,6 +40,28 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: null
+    },
+    notifications: {
+      confirmationSentAt: {
+        type: Date,
+        default: null
+      },
+      cancellationSentAt: {
+        type: Date,
+        default: null
+      },
+      completionSentAt: {
+        type: Date,
+        default: null
+      },
+      reminderSentAt: {
+        type: Date,
+        default: null
+      },
+      reminderClaimedAt: {
+        type: Date,
+        default: null
+      }
     }
   },
   { timestamps: true }
@@ -55,6 +77,7 @@ appointmentSchema.index(
 
 appointmentSchema.index({ patient: 1, startTime: 1 });
 appointmentSchema.index({ doctor: 1, startTime: 1, endTime: 1 });
+appointmentSchema.index({ status: 1, startTime: 1, 'notifications.reminderSentAt': 1 });
 appointmentSchema.index(
   { patient: 1, idempotencyKey: 1 },
   {

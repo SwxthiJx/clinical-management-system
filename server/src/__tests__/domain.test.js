@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hasPermission } from '../config/permissions.js';
 import { assertStatusTransition, getSlotEnd, isInsideAvailability } from '../services/slotService.js';
+import { buildAppointmentMessage } from '../services/appointmentNotificationService.js';
 
 describe('appointment scheduling rules', () => {
   it('creates a 30-minute slot end', () => {
@@ -33,5 +34,40 @@ describe('role permissions', () => {
     expect(hasPermission({ role: 'admin' }, 'system:read')).toBe(true);
     expect(hasPermission({ role: 'doctor' }, 'system:read')).toBe(false);
     expect(hasPermission({ role: 'patient' }, 'system:read')).toBe(false);
+  });
+});
+
+describe('appointment notifications', () => {
+  const appointment = {
+    patient: { name: 'Priya Nair', email: 'priya@clinic.local' },
+    doctor: { name: 'Dr. Maya Rao', email: 'doctor@clinic.local' },
+    startTime: new Date('2026-06-15T03:30:00.000Z'),
+    status: 'booked',
+    reason: 'Private medical reason'
+  };
+
+  it('builds a patient confirmation with appointment details', () => {
+    const message = buildAppointmentMessage({
+      appointment,
+      type: 'confirmation',
+      recipientRole: 'patient'
+    });
+
+    expect(message.subject).toContain('Appointment confirmed');
+    expect(message.text).toContain('Hello Priya Nair');
+    expect(message.text).toContain('Doctor: Dr. Maya Rao');
+    expect(message.text).toContain('/appointments');
+  });
+
+  it('builds a doctor reminder without including the medical reason', () => {
+    const message = buildAppointmentMessage({
+      appointment,
+      type: 'reminder',
+      recipientRole: 'doctor'
+    });
+
+    expect(message.text).toContain('Hello Dr. Maya Rao');
+    expect(message.text).toContain('Patient: Priya Nair');
+    expect(message.text).not.toContain(appointment.reason);
   });
 });

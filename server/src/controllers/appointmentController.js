@@ -6,6 +6,7 @@ import {
   listAvailableSlots
 } from '../services/appointmentManagementService.js';
 import { recordAuditEvent } from '../services/auditService.js';
+import { sendAppointmentNotificationSafely } from '../services/appointmentNotificationService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const listAppointments = asyncHandler(async (req, res) => {
@@ -30,6 +31,10 @@ export const createAppointment = asyncHandler(async (req, res) => {
         startTime: result.appointment.startTime
       }
     });
+    await sendAppointmentNotificationSafely({
+      appointment: result.appointment,
+      type: 'confirmation'
+    });
   }
   res.status(result.created ? 201 : 200).json({
     appointment: result.appointment,
@@ -50,6 +55,10 @@ export const updateAppointmentStatus = asyncHandler(async (req, res) => {
     entityId: appointment._id,
     metadata: { status: req.validated.body.status }
   });
+  await sendAppointmentNotificationSafely({
+    appointment,
+    type: req.validated.body.status === 'completed' ? 'completion' : 'cancellation'
+  });
   res.json({ appointment });
 });
 
@@ -65,5 +74,6 @@ export const cancelAppointment = asyncHandler(async (req, res) => {
     entityId: appointment._id,
     metadata: { cancelledBy: req.user.role }
   });
+  await sendAppointmentNotificationSafely({ appointment, type: 'cancellation' });
   res.json({ appointment });
 });

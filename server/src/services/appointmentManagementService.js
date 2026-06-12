@@ -123,5 +123,5 @@ export async function cancelAppointmentForUser({ user, appointmentId }) {
   appointment.status = 'cancelled';
   appointment.cancelledBy = user.role;
   await appointment.save();
-  return appointment;
+  return populateAppointment(appointment);
 }
