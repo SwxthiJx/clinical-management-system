@@ -8,6 +8,7 @@
     "start": "node src/index.js",
     "seed": "node src/seed.js",
     "seed:patients": "node src/seedPatients.js",
+    "seed:doctor-profiles": "node src/seedDoctorProfiles.js",
     "migrate:phase1": "node src/migrations/phase1SecurityMigration.js",
     "test": "vitest run",
     "test:watch": "vitest"

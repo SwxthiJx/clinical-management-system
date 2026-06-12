@@ -1,5 +1,6 @@
 import './config/env.js';
 import { buildDemoPatients } from './data/demoPatients.js';
+import { demoDoctorProfiles } from './data/demoDoctorProfiles.js';
 import { Appointment } from './models/Appointment.js';
 import { AuditLog } from './models/AuditLog.js';
 import { AuthToken } from './models/AuthToken.js';
@@ -34,6 +35,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'General Medicine',
+      ...demoDoctorProfiles['dr-maya-rao'],
       phone: '555-0101',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),
@@ -50,6 +52,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'Cardiology',
+      ...demoDoctorProfiles['dr-arjun-mehta'],
       phone: '555-0102',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),
@@ -66,6 +69,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'Dermatology',
+      ...demoDoctorProfiles['dr-neha-iyer'],
       phone: '555-0103',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),
@@ -82,6 +86,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'Pediatrics',
+      ...demoDoctorProfiles['dr-farah-khan'],
       phone: '555-0104',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),
@@ -98,6 +103,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'Orthopedics',
+      ...demoDoctorProfiles['dr-kabir-sen'],
       phone: '555-0105',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),
@@ -114,6 +120,7 @@ async function seed() {
       password: 'Doctor123!',
       role: 'doctor',
       specialty: 'ENT',
+      ...demoDoctorProfiles['dr-sara-thomas'],
       phone: '555-0106',
       emailVerifiedAt: new Date(),
       approvedAt: new Date(),

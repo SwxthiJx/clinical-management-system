@@ -5,13 +5,39 @@ import PasswordInput from '../PasswordInput.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useUsers } from '../hooks/useClinicQueries.js';
 
+const emptyDoctorForm = {
+  name: '',
+  username: '',
+  email: '',
+  password: 'Doctor123!',
+  specialty: '',
+  phone: '',
+  education: '',
+  experienceYears: 0,
+  languages: '',
+  clinicalInterests: '',
+  bio: ''
+};
+
+function listFromInput(value) {
+  return value.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
 export default function AdminPage() {
   const { user } = useAuth();
   const usersQuery = useUsers(user.role === 'admin');
-  const [form, setForm] = useState({ name: '', username: '', email: '', password: 'Doctor123!', specialty: '', phone: '' });
+  const [form, setForm] = useState(emptyDoctorForm);
   const [message, setMessage] = useState('');
   const createDoctor = useClinicMutation({
-    mutationFn: () => api('/api/users/doctors', { method: 'POST', body: JSON.stringify(form) }),
+    mutationFn: () => api('/api/users/doctors', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...form,
+        education: listFromInput(form.education),
+        languages: listFromInput(form.languages),
+        clinicalInterests: listFromInput(form.clinicalInterests)
+      })
+    }),
     invalidate: [queryKeys.users, queryKeys.doctors]
   });
   const toggleUser = useClinicMutation({
@@ -31,7 +57,7 @@ export default function AdminPage() {
           event.preventDefault();
           try {
             await createDoctor.mutateAsync();
-            setForm({ name: '', username: '', email: '', password: 'Doctor123!', specialty: '', phone: '' });
+            setForm(emptyDoctorForm);
             setMessage('Doctor account created.');
           } catch (error) { setMessage(error.message); }
         }}>
@@ -41,6 +67,11 @@ export default function AdminPage() {
           <label>Temporary password<PasswordInput value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required /></label>
           <label>Specialty<input value={form.specialty} onChange={(event) => setForm({ ...form, specialty: event.target.value })} required /></label>
           <label>Phone<input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label>
+          <label>Education<input placeholder="MBBS, MD General Medicine" value={form.education} onChange={(event) => setForm({ ...form, education: event.target.value })} /></label>
+          <label>Years of experience<input type="number" min="0" max="70" value={form.experienceYears} onChange={(event) => setForm({ ...form, experienceYears: Number(event.target.value) })} /></label>
+          <label>Languages<input placeholder="English, Hindi" value={form.languages} onChange={(event) => setForm({ ...form, languages: event.target.value })} /></label>
+          <label>Clinical interests<input placeholder="Preventive care, Diabetes" value={form.clinicalInterests} onChange={(event) => setForm({ ...form, clinicalInterests: event.target.value })} /></label>
+          <label className="full">Professional summary<textarea value={form.bio} onChange={(event) => setForm({ ...form, bio: event.target.value })} /></label>
           <button className="primary" type="submit">Create doctor</button>{message && <p className="message">{message}</p>}
         </form>
       </section>

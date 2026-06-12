@@ -16,14 +16,14 @@ export function findActivePatientById(id) {
 
 export function listActiveDoctors() {
   return User.find({ role: 'doctor', isActive: true, approvedAt: { $ne: null } })
-    .select('name username email specialty phone availability')
+    .select('name username email specialty education experienceYears languages clinicalInterests bio phone availability')
     .sort({ name: 1 })
     .lean();
 }
 
 export function listAllUsers() {
   return User.find()
-    .select('name username email role specialty phone isActive emailVerifiedAt approvedAt createdAt')
+    .select('name username email role specialty education experienceYears languages clinicalInterests bio phone isActive emailVerifiedAt approvedAt createdAt')
     .sort({ createdAt: -1 })
     .lean();
 }

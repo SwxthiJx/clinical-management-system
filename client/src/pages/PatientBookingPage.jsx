@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
+import DoctorProfileCard from '../components/DoctorProfileCard.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useDoctors, useSlots } from '../hooks/useClinicQueries.js';
-import { createIdempotencyKey, formatAvailability, tomorrowDate } from '../utils/formatters.js';
+import { createIdempotencyKey, tomorrowDate } from '../utils/formatters.js';
 
 export default function PatientBookingPage() {
   const { user } = useAuth();
@@ -44,31 +45,52 @@ export default function PatientBookingPage() {
   }
 
   return (
-    <section className="panel">
-      <div className="panel-heading"><h2>Book a slot</h2><span>30 min</span></div>
-      <form className="grid-form" onSubmit={submit}>
-        <label>Doctor
-          <select value={form.doctorId} onChange={(event) => setForm({ ...form, doctorId: event.target.value, startTime: '' })}>
-            {doctors.map((doctor) => <option value={doctor._id} key={doctor._id}>{doctor.name} - {doctor.specialty}</option>)}
-          </select>
-        </label>
-        <label>Date
-          <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value, startTime: '' })} />
-        </label>
-        <div className="slot-picker full">
-          {slotsQuery.isLoading && <p>Loading available slots...</p>}
-          {(slotsQuery.data || []).map((slot) => (
-            <button className={form.startTime === slot.startTime ? 'active' : ''} key={slot.startTime} type="button" onClick={() => setForm({ ...form, startTime: slot.startTime })}>{slot.label}</button>
-          ))}
-          {!slotsQuery.isLoading && !slotsQuery.data?.length && <p className="empty compact">No available slots for this date.</p>}
+    <div className="main-column">
+      <section className="panel">
+        <div className="panel-heading">
+          <div><span className="eyebrow">Medical team</span><h2>Choose your doctor</h2></div>
+          <span>{doctors.length} profiles</span>
         </div>
-        <label className="full">Reason
-          <textarea value={form.reason} onChange={(event) => setForm({ ...form, reason: event.target.value })} />
-        </label>
-        <button className="primary" type="submit" disabled={booking.isPending}>Book appointment</button>
-        {message && <p className="message">{message}</p>}
-      </form>
-      {selectedDoctor && <div className="selected-doctor"><strong>{selectedDoctor.name}</strong><span>{selectedDoctor.specialty}</span><p>{formatAvailability(selectedDoctor.availability)}</p></div>}
-    </section>
+        <div className="doctor-profile-grid">
+          {doctors.map((doctor) => (
+            <DoctorProfileCard
+              doctor={doctor}
+              key={doctor._id}
+              selected={doctor._id === form.doctorId}
+              onSelect={(doctorId) => setForm({ ...form, doctorId, startTime: '' })}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-heading">
+          <h2>Book with {selectedDoctor?.name || 'a doctor'}</h2>
+          <span>30 min</span>
+        </div>
+        <form className="grid-form" onSubmit={submit}>
+          <label>Selected doctor
+            <select value={form.doctorId} onChange={(event) => setForm({ ...form, doctorId: event.target.value, startTime: '' })}>
+              {doctors.map((doctor) => <option value={doctor._id} key={doctor._id}>{doctor.name} - {doctor.specialty}</option>)}
+            </select>
+          </label>
+          <label>Date
+            <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value, startTime: '' })} />
+          </label>
+          <div className="slot-picker full">
+            {slotsQuery.isLoading && <p>Loading available slots...</p>}
+            {(slotsQuery.data || []).map((slot) => (
+              <button className={form.startTime === slot.startTime ? 'active' : ''} key={slot.startTime} type="button" onClick={() => setForm({ ...form, startTime: slot.startTime })}>{slot.label}</button>
+            ))}
+            {!slotsQuery.isLoading && !slotsQuery.data?.length && <p className="empty compact">No available slots for this date.</p>}
+          </div>
+          <label className="full">Reason
+            <textarea value={form.reason} onChange={(event) => setForm({ ...form, reason: event.target.value })} />
+          </label>
+          <button className="primary" type="submit" disabled={booking.isPending}>Book appointment</button>
+          {message && <p className="message">{message}</p>}
+        </form>
+      </section>
+    </div>
   );
 }

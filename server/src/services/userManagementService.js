@@ -39,7 +39,7 @@ export async function setUserActiveStatus({ actor, userId, isActive }) {
     userId,
     { isActive },
     { new: true, runValidators: true }
-  ).select('name username email role specialty phone isActive emailVerifiedAt approvedAt createdAt');
+  ).select('name username email role specialty education experienceYears languages clinicalInterests bio phone isActive emailVerifiedAt approvedAt createdAt');
 
   if (!user) throw new AppError('User not found', 404, 'USER_NOT_FOUND');
   if (!user.isActive) await revokeAllUserSessions(user._id);

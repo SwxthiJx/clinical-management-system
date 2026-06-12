@@ -509,6 +509,126 @@ textarea {
   border: 1px solid #bee3d8;
 }
 
+.doctor-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.doctor-profile-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.doctor-profile-card.selected {
+  border-color: #3c8d79;
+  box-shadow: inset 3px 0 0 #3c8d79;
+}
+
+.doctor-profile-heading {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: center;
+}
+
+.doctor-profile-heading h3 {
+  margin: 0 0 2px;
+  font-size: 1rem;
+}
+
+.doctor-profile-heading span {
+  color: #697782;
+  font-size: 0.84rem;
+}
+
+.doctor-avatar {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e9f4f1;
+  color: #16756f;
+}
+
+.doctor-avatar svg {
+  width: 21px;
+  height: 21px;
+}
+
+.doctor-profile-heading .selected-label {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #e8f5f3;
+  color: #11635e;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.doctor-bio,
+.doctor-availability {
+  color: #52616c;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.doctor-facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.doctor-facts > div {
+  display: grid;
+  grid-template-columns: 22px 84px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.doctor-facts svg {
+  width: 18px;
+  height: 18px;
+  color: #16756f;
+}
+
+.doctor-facts dt {
+  color: #35444f;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.doctor-facts dd {
+  margin: 0;
+  color: #697782;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.clinical-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.clinical-interests span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #edf2f5;
+  color: #52616c;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.doctor-profile-card > button {
+  justify-self: start;
+}
+
 .slot-picker {
   display: flex;
   flex-wrap: wrap;
@@ -940,7 +1060,8 @@ textarea {
   .grid-form,
   .availability-form,
   .user-row,
-  .demo-logins button {
+  .demo-logins button,
+  .doctor-profile-grid {
     grid-template-columns: 1fr;
   }
 

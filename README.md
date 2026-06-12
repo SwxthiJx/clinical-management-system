@@ -19,6 +19,7 @@ A full-stack appointment management system for patients, doctors, and administra
 - Patient-only public registration and admin-managed doctor accounts
 - Request validation and API rate limiting
 - Doctor availability management
+- Patient-visible doctor profiles with education, experience, languages, and clinical interests
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability
 - Schedule exceptions for blocked doctor dates
@@ -123,6 +124,12 @@ To add only missing demo patients without deleting current data, run:
 
 ```bash
 npm run seed:patients --prefix server
+```
+
+To add or refresh the demo doctor profiles without deleting current data, run:
+
+```bash
+npm run seed:doctor-profiles --prefix server
 ```
 
 Demo credentials are never displayed by default. To show the demo account picker

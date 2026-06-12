@@ -58,6 +58,30 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: ''
     },
+    education: {
+      type: [String],
+      default: []
+    },
+    experienceYears: {
+      type: Number,
+      min: 0,
+      max: 70,
+      default: 0
+    },
+    languages: {
+      type: [String],
+      default: []
+    },
+    clinicalInterests: {
+      type: [String],
+      default: []
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 600,
+      default: ''
+    },
     phone: {
       type: String,
       trim: true,
