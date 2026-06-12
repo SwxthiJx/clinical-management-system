@@ -9,6 +9,7 @@ export const queryKeys = {
   auditLogs: ['audit-logs'],
   availability: (doctorId) => ['availability', doctorId],
   exceptions: (doctorId) => ['exceptions', doctorId],
+  allSlots: ['slots'],
   slots: (doctorId, date) => ['slots', doctorId, date]
 };
 

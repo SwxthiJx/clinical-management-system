@@ -27,6 +27,14 @@ export const appointmentIdSchema = z.object({
   params: z.object({ id: objectId })
 });
 
+export const rescheduleAppointmentSchema = z.object({
+  body: z.object({
+    startTime: z.string().datetime({ offset: true })
+  }).strict(),
+  query: z.object({}).passthrough(),
+  params: z.object({ id: objectId })
+});
+
 export const slotQuerySchema = z.object({
   body: z.object({}).passthrough(),
   query: z.object({

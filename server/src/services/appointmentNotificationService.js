@@ -20,6 +20,10 @@ const notificationTypes = {
     subject: 'Appointment completed',
     timestampField: 'completionSentAt'
   },
+  reschedule: {
+    subject: 'Appointment rescheduled',
+    timestampField: 'rescheduleSentAt'
+  },
   reminder: {
     subject: 'Upcoming appointment reminder',
     timestampField: 'reminderSentAt'
@@ -34,7 +38,7 @@ function appointmentDate(value) {
   }).format(new Date(value));
 }
 
-export function buildAppointmentMessage({ appointment, type, recipientRole }) {
+export function buildAppointmentMessage({ appointment, type, recipientRole, previousStartTime }) {
   const config = notificationTypes[type];
   if (!config) throw new Error(`Unsupported appointment notification type: ${type}`);
 
@@ -50,8 +54,18 @@ export function buildAppointmentMessage({ appointment, type, recipientRole }) {
     confirmation: 'The appointment has been confirmed.',
     cancellation: 'The appointment has been cancelled.',
     completion: 'The appointment has been marked as completed.',
+    reschedule: 'The appointment has been rescheduled.',
     reminder: `This is a reminder that the appointment is scheduled within the next ${env.APPOINTMENT_REMINDER_HOURS} hours.`
   }[type];
+
+  const details = [
+    `${counterpartLabel}: ${counterpart}`,
+    ...(type === 'reschedule' && previousStartTime
+      ? [`Previous date and time: ${appointmentDate(previousStartTime)}`]
+      : []),
+    `Date and time: ${when}`,
+    `Status: ${appointment.status}`
+  ];
 
   return {
     subject: `${config.subject} | Aarogya Care Hospital`,
@@ -59,9 +73,7 @@ export function buildAppointmentMessage({ appointment, type, recipientRole }) {
       `Hello ${recipientName},`,
       '',
       opening,
-      `${counterpartLabel}: ${counterpart}`,
-      `Date and time: ${when}`,
-      `Status: ${appointment.status}`,
+      ...details,
       '',
       `View appointments: ${portalUrl}`,
       '',
@@ -70,13 +82,13 @@ export function buildAppointmentMessage({ appointment, type, recipientRole }) {
   };
 }
 
-async function deliverToParticipant({ appointment, type, participant, recipientRole }) {
+async function deliverToParticipant({ appointment, type, participant, recipientRole, previousStartTime }) {
   if (!participant?.email) return { delivered: false, skipped: true };
-  const message = buildAppointmentMessage({ appointment, type, recipientRole });
+  const message = buildAppointmentMessage({ appointment, type, recipientRole, previousStartTime });
   return sendMail({ to: participant.email, ...message });
 }
 
-export async function sendAppointmentNotification({ appointment, type }) {
+export async function sendAppointmentNotification({ appointment, type, previousStartTime }) {
   const config = notificationTypes[type];
   if (!config) throw new Error(`Unsupported appointment notification type: ${type}`);
 
@@ -85,13 +97,15 @@ export async function sendAppointmentNotification({ appointment, type }) {
       appointment,
       type,
       participant: appointment.patient,
-      recipientRole: 'patient'
+      recipientRole: 'patient',
+      previousStartTime
     }),
     deliverToParticipant({
       appointment,
       type,
       participant: appointment.doctor,
-      recipientRole: 'doctor'
+      recipientRole: 'doctor',
+      previousStartTime
     })
   ]);
 

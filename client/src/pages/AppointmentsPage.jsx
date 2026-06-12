@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import AppointmentList from '../components/AppointmentList.jsx';
 import DashboardWelcome from '../components/DashboardWelcome.jsx';
 import HealthyLivingGuide from '../components/HealthyLivingGuide.jsx';
+import ReschedulePanel from '../components/ReschedulePanel.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useAppointments, useClinicMutation, useDoctors, useUsers } from '../hooks/useClinicQueries.js';
 import { api } from '../api.js';
@@ -10,6 +12,8 @@ export default function AppointmentsPage() {
   const appointments = useAppointments();
   const doctors = useDoctors();
   const users = useUsers(user.role === 'admin');
+  const [rescheduling, setRescheduling] = useState(null);
+  const [rescheduleMessage, setRescheduleMessage] = useState('');
   const cancelMutation = useClinicMutation({
     mutationFn: (id) => api(`/api/appointments/${id}/cancel`, { method: 'PATCH' }),
     invalidate: [queryKeys.appointments]
@@ -18,6 +22,26 @@ export default function AppointmentsPage() {
     mutationFn: (id) => api(`/api/appointments/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status: 'completed' }) }),
     invalidate: [queryKeys.appointments]
   });
+  const rescheduleMutation = useClinicMutation({
+    mutationFn: ({ id, startTime }) => api(`/api/appointments/${id}/reschedule`, {
+      method: 'PATCH',
+      body: JSON.stringify({ startTime })
+    }),
+    invalidate: [queryKeys.appointments, queryKeys.allSlots]
+  });
+
+  async function reschedule(payload) {
+    try {
+      await rescheduleMutation.mutateAsync(payload);
+      setRescheduleMessage('Appointment rescheduled. Notifications have been prepared.');
+      window.setTimeout(() => {
+        setRescheduling(null);
+        setRescheduleMessage('');
+      }, 1200);
+    } catch (mutationError) {
+      setRescheduleMessage(mutationError.message);
+    }
+  }
 
   if (appointments.isLoading || doctors.isLoading) return <main className="loading">Loading...</main>;
   const error = appointments.error || doctors.error || users.error;
@@ -31,7 +55,20 @@ export default function AppointmentsPage() {
         user={user}
         onCancel={(id) => cancelMutation.mutate(id)}
         onComplete={(id) => completeMutation.mutate(id)}
+        onReschedule={(appointment) => {
+          setRescheduling(appointment);
+          setRescheduleMessage('');
+        }}
       />
+      {rescheduling && (
+        <ReschedulePanel
+          appointment={rescheduling}
+          pending={rescheduleMutation.isPending}
+          message={rescheduleMessage}
+          onClose={() => setRescheduling(null)}
+          onSubmit={reschedule}
+        />
+      )}
       <HealthyLivingGuide />
     </>
   );

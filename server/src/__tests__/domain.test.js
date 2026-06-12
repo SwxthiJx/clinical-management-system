@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { hasPermission } from '../config/permissions.js';
 import { assertStatusTransition, getSlotEnd, isInsideAvailability } from '../services/slotService.js';
 import { buildAppointmentMessage } from '../services/appointmentNotificationService.js';
+import { rescheduleAppointmentSchema } from '../schemas/appointmentSchemas.js';
 
 describe('appointment scheduling rules', () => {
   it('creates a 30-minute slot end', () => {
@@ -34,6 +35,13 @@ describe('role permissions', () => {
     expect(hasPermission({ role: 'admin' }, 'system:read')).toBe(true);
     expect(hasPermission({ role: 'doctor' }, 'system:read')).toBe(false);
     expect(hasPermission({ role: 'patient' }, 'system:read')).toBe(false);
+  });
+
+  it('allows each role to reschedule only within its scope', () => {
+    expect(hasPermission({ role: 'patient' }, 'appointment:reschedule-own')).toBe(true);
+    expect(hasPermission({ role: 'patient' }, 'appointment:reschedule-any')).toBe(false);
+    expect(hasPermission({ role: 'doctor' }, 'appointment:reschedule-assigned')).toBe(true);
+    expect(hasPermission({ role: 'admin' }, 'appointment:reschedule-any')).toBe(true);
   });
 });
 
@@ -69,5 +77,40 @@ describe('appointment notifications', () => {
     expect(message.text).toContain('Hello Dr. Maya Rao');
     expect(message.text).toContain('Patient: Priya Nair');
     expect(message.text).not.toContain(appointment.reason);
+  });
+
+  it('includes both previous and new times in a reschedule notification', () => {
+    const message = buildAppointmentMessage({
+      appointment,
+      type: 'reschedule',
+      recipientRole: 'patient',
+      previousStartTime: new Date('2026-06-14T03:30:00.000Z')
+    });
+
+    expect(message.subject).toContain('Appointment rescheduled');
+    expect(message.text).toContain('Previous date and time');
+    expect(message.text).toContain('Date and time');
+  });
+});
+
+describe('reschedule validation', () => {
+  it('accepts a timezone-aware appointment timestamp', () => {
+    const result = rescheduleAppointmentSchema.safeParse({
+      body: { startTime: '2026-06-20T09:00:00.000Z' },
+      query: {},
+      params: { id: '507f1f77bcf86cd799439011' }
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects unexpected reschedule fields', () => {
+    const result = rescheduleAppointmentSchema.safeParse({
+      body: { startTime: '2026-06-20T09:00:00.000Z', doctorId: '507f1f77bcf86cd799439012' },
+      query: {},
+      params: { id: '507f1f77bcf86cd799439011' }
+    });
+
+    expect(result.success).toBe(false);
   });
 });

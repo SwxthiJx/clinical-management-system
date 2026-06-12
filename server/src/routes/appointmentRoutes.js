@@ -4,6 +4,7 @@ import {
   createAppointment,
   listAppointments,
   listSlots,
+  rescheduleAppointment,
   updateAppointmentStatus
 } from '../controllers/appointmentController.js';
 import { protect, requireAnyPermission } from '../middleware/authMiddleware.js';
@@ -13,6 +14,7 @@ import {
   appointmentIdSchema,
   appointmentStatusSchema,
   createAppointmentSchema,
+  rescheduleAppointmentSchema,
   slotQuerySchema
 } from '../schemas/appointmentSchemas.js';
 
@@ -38,6 +40,18 @@ router.post(
   requireAnyPermission('appointment:create-own', 'appointment:create-any'),
   validate(createAppointmentSchema),
   createAppointment
+);
+router.patch(
+  '/:id/reschedule',
+  protect,
+  requireCsrf,
+  requireAnyPermission(
+    'appointment:reschedule-own',
+    'appointment:reschedule-assigned',
+    'appointment:reschedule-any'
+  ),
+  validate(rescheduleAppointmentSchema),
+  rescheduleAppointment
 );
 router.patch(
   '/:id/status',

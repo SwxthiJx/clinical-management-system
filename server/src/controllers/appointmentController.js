@@ -3,7 +3,8 @@ import {
   cancelAppointmentForUser,
   changeAppointmentStatus,
   listAppointmentsForUser,
-  listAvailableSlots
+  listAvailableSlots,
+  rescheduleAppointmentForUser
 } from '../services/appointmentManagementService.js';
 import { recordAuditEvent } from '../services/auditService.js';
 import { sendAppointmentNotificationSafely } from '../services/appointmentNotificationService.js';
@@ -76,4 +77,29 @@ export const cancelAppointment = asyncHandler(async (req, res) => {
   });
   await sendAppointmentNotificationSafely({ appointment, type: 'cancellation' });
   res.json({ appointment });
+});
+
+export const rescheduleAppointment = asyncHandler(async (req, res) => {
+  const result = await rescheduleAppointmentForUser({
+    user: req.user,
+    appointmentId: req.params.id,
+    startTime: req.validated.body.startTime
+  });
+  await recordAuditEvent({
+    req,
+    action: 'appointment.rescheduled',
+    entityType: 'appointment',
+    entityId: result.appointment._id,
+    metadata: {
+      previousStartTime: result.previousStartTime,
+      startTime: result.appointment.startTime,
+      rescheduledBy: req.user.role
+    }
+  });
+  await sendAppointmentNotificationSafely({
+    appointment: result.appointment,
+    type: 'reschedule',
+    previousStartTime: result.previousStartTime
+  });
+  res.json({ appointment: result.appointment });
 });

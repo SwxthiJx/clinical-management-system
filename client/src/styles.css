@@ -738,6 +738,63 @@ textarea {
   font-weight: 700;
 }
 
+.reschedule-panel {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid #9bc9bb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(23, 33, 43, 0.06);
+}
+
+.reschedule-heading,
+.reschedule-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.reschedule-heading h3 {
+  margin: 4px 0 0;
+  font-size: 1.05rem;
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #edf2f5;
+  color: #52616c;
+}
+
+.icon-button svg,
+.reschedule-footer .primary svg {
+  width: 18px;
+  height: 18px;
+}
+
+.reschedule-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.reschedule-footer {
+  justify-content: flex-start;
+}
+
+.reschedule-footer .primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .status {
   display: inline-flex;
   min-height: 30px;
@@ -1084,6 +1141,15 @@ textarea {
 
   .audit-entry {
     grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .reschedule-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .reschedule-heading,
+  .reschedule-footer {
+    align-items: flex-start;
   }
 
   .audit-context {

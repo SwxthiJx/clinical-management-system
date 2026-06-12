@@ -21,6 +21,7 @@ A full-stack appointment management system for patients, doctors, and administra
 - Doctor availability management
 - Patient-visible doctor profiles with education, experience, languages, and clinical interests
 - Appointment confirmation, cancellation, completion, and reminder emails
+- Conflict-safe appointment rescheduling with fresh reminders and participant notifications
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability
 - Schedule exceptions for blocked doctor dates
@@ -226,6 +227,7 @@ and the local ignored `.env` file.
 - `GET /api/appointments/slots`
 - `POST /api/appointments`
 - `PATCH /api/appointments/:id/status`
+- `PATCH /api/appointments/:id/reschedule`
 - `PATCH /api/appointments/:id/cancel`
 
 ### Operations
@@ -241,6 +243,8 @@ and the local ignored `.env` file.
 - Doctors can block full dates as schedule exceptions.
 - Booking requests can include an `idempotencyKey` so retrying the same request does not create duplicates.
 - Appointments can transition from `booked` to `completed` or `cancelled`; terminal statuses cannot be changed again.
+- Patients, assigned doctors, and administrators can move booked appointments to another generated slot for the same doctor.
+- Rescheduling revalidates availability and conflicts, records an audit event, resets the reminder cycle, and notifies both participants.
 
 ## Phase 3 Architecture
 

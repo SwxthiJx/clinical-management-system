@@ -125,3 +125,65 @@ export async function cancelAppointmentForUser({ user, appointmentId }) {
   await appointment.save();
   return populateAppointment(appointment);
 }
+
+export async function rescheduleAppointmentForUser({ user, appointmentId, startTime }) {
+  const appointment = await findAppointmentById(appointmentId);
+  if (!appointment) throw new AppError('Appointment not found', 404, 'APPOINTMENT_NOT_FOUND');
+  if (!canAccess(user, appointment)) throw new AppError('Permission denied', 403, 'PERMISSION_DENIED');
+  if (appointment.status !== 'booked') {
+    throw new AppError(
+      `Cannot reschedule appointment with status ${appointment.status}`,
+      409,
+      'INVALID_STATUS_TRANSITION'
+    );
+  }
+
+  const start = new Date(startTime);
+  if (start <= new Date()) {
+    throw new AppError('Appointment must be scheduled in the future', 400, 'APPOINTMENT_NOT_IN_FUTURE');
+  }
+  if (start.getTime() === appointment.startTime.getTime()) {
+    throw new AppError('Choose a different appointment time', 400, 'UNCHANGED_APPOINTMENT_TIME');
+  }
+
+  const doctor = await findActiveDoctorById(appointment.doctor);
+  if (!doctor) throw new AppError('Doctor not found', 404, 'DOCTOR_NOT_FOUND');
+
+  const end = getSlotEnd(start);
+  if (await isDateBlocked(appointment.doctor, start)) {
+    throw new AppError('Doctor is unavailable on this date', 409, 'SCHEDULE_EXCEPTION');
+  }
+  if (!isInsideAvailability(doctor, start, end)) {
+    throw new AppError('Requested time is outside doctor availability', 409, 'OUTSIDE_AVAILABILITY');
+  }
+  if (await hasAppointmentConflict({
+    doctorId: appointment.doctor,
+    startTime: start,
+    endTime: end,
+    excludeAppointmentId: appointment._id
+  })) {
+    throw new AppError('This doctor is already booked for the selected slot', 409, 'APPOINTMENT_CONFLICT');
+  }
+
+  const previousStartTime = appointment.startTime;
+  appointment.startTime = start;
+  appointment.endTime = end;
+  appointment.rescheduleCount += 1;
+  appointment.lastRescheduledAt = new Date();
+  appointment.lastRescheduledBy = user.role;
+  appointment.notifications.reminderSentAt = null;
+  appointment.notifications.reminderClaimedAt = null;
+  appointment.notifications.rescheduleSentAt = null;
+
+  try {
+    await appointment.save();
+  } catch (error) {
+    if (error.code !== 11000) throw error;
+    throw new AppError('This doctor is already booked for the selected slot', 409, 'APPOINTMENT_CONFLICT');
+  }
+
+  return {
+    appointment: await populateAppointment(appointment),
+    previousStartTime
+  };
+}

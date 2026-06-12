@@ -1,7 +1,7 @@
-import { CheckCircle2 } from 'lucide-react';
+import { CalendarSync, CheckCircle2 } from 'lucide-react';
 import { formatDateTime } from '../utils/formatters.js';
 
-export default function AppointmentList({ appointments, user, onCancel, onComplete }) {
+export default function AppointmentList({ appointments, user, onCancel, onComplete, onReschedule }) {
   const heading = user.role === 'admin' ? 'All appointments' : 'My appointments';
   return (
     <section className="panel">
@@ -18,6 +18,9 @@ export default function AppointmentList({ appointments, user, onCancel, onComple
               <span className={`status ${appointment.status}`}>{appointment.status}</span>
               {appointment.status === 'booked' && (
                 <>
+                  <button type="button" onClick={() => onReschedule(appointment)}>
+                    <CalendarSync aria-hidden="true" />Reschedule
+                  </button>
                   {(user.role === 'doctor' || user.role === 'admin') && (
                     <button type="button" onClick={() => onComplete(appointment._id)}>
                       <CheckCircle2 aria-hidden="true" />Complete

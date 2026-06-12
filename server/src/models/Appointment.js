@@ -36,6 +36,20 @@ const appointmentSchema = new mongoose.Schema(
       enum: ['patient', 'doctor', 'admin', null],
       default: null
     },
+    rescheduleCount: {
+      type: Number,
+      min: 0,
+      default: 0
+    },
+    lastRescheduledAt: {
+      type: Date,
+      default: null
+    },
+    lastRescheduledBy: {
+      type: String,
+      enum: ['patient', 'doctor', 'admin', null],
+      default: null
+    },
     idempotencyKey: {
       type: String,
       trim: true,
@@ -51,6 +65,10 @@ const appointmentSchema = new mongoose.Schema(
         default: null
       },
       completionSentAt: {
+        type: Date,
+        default: null
+      },
+      rescheduleSentAt: {
         type: Date,
         default: null
       },

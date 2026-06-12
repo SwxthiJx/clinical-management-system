@@ -285,6 +285,32 @@ export const openApiSpec = {
         responses: { 200: { description: 'Appointment updated' } }
       }
     },
+    '/appointments/{id}/reschedule': {
+      patch: {
+        tags: ['Appointments'],
+        summary: 'Move a booked appointment to another available slot',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['startTime'],
+                properties: { startTime: { type: 'string', format: 'date-time' } }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Appointment rescheduled and participants notified' },
+          409: { description: 'Slot conflict, blocked date, or terminal appointment status' }
+        }
+      }
+    },
     '/appointments/{id}/cancel': {
       patch: {
         tags: ['Appointments'],
