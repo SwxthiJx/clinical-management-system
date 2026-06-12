@@ -35,6 +35,30 @@ export const rescheduleAppointmentSchema = z.object({
   params: z.object({ id: objectId })
 });
 
+const consultationText = (maximum) => z.string().trim().max(maximum).optional().default('');
+
+export const consultationNoteSchema = z.object({
+  body: z
+    .object({
+      subjective: consultationText(4000),
+      objective: consultationText(4000),
+      assessment: consultationText(4000),
+      plan: consultationText(4000),
+      prescriptions: consultationText(4000),
+      followUpInstructions: consultationText(2000),
+      followUpDate: z.union([z.string().date(), z.literal(''), z.null()]).optional().default(null),
+      privateNotes: consultationText(4000),
+      status: z.enum(['draft', 'finalized'])
+    })
+    .strict()
+    .refine(
+      (note) => [note.subjective, note.objective, note.assessment, note.plan].some(Boolean),
+      { message: 'At least one clinical note section is required' }
+    ),
+  query: z.object({}).passthrough(),
+  params: z.object({ id: objectId })
+});
+
 export const slotQuerySchema = z.object({
   body: z.object({}).passthrough(),
   query: z.object({

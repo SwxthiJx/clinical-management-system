@@ -8,6 +8,10 @@ import {
 } from '../services/appointmentManagementService.js';
 import { recordAuditEvent } from '../services/auditService.js';
 import { sendAppointmentNotificationSafely } from '../services/appointmentNotificationService.js';
+import {
+  getConsultationNoteForUser,
+  saveConsultationNoteForDoctor
+} from '../services/consultationNoteService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const listAppointments = asyncHandler(async (req, res) => {
@@ -102,4 +106,35 @@ export const rescheduleAppointment = asyncHandler(async (req, res) => {
     previousStartTime: result.previousStartTime
   });
   res.json({ appointment: result.appointment });
+});
+
+export const getConsultationNote = asyncHandler(async (req, res) => {
+  const consultationNote = await getConsultationNoteForUser({
+    user: req.user,
+    appointmentId: req.params.id
+  });
+  res.json({ consultationNote });
+});
+
+export const saveConsultationNote = asyncHandler(async (req, res) => {
+  const consultationNote = await saveConsultationNoteForDoctor({
+    user: req.user,
+    appointmentId: req.params.id,
+    payload: req.validated.body
+  });
+  await recordAuditEvent({
+    req,
+    action:
+      consultationNote.status === 'finalized'
+        ? 'consultation_note.finalized'
+        : 'consultation_note.saved',
+    entityType: 'consultation_note',
+    entityId: consultationNote._id,
+    metadata: {
+      appointmentId: req.params.id,
+      status: consultationNote.status,
+      revision: consultationNote.revision
+    }
+  });
+  res.json({ consultationNote });
 });

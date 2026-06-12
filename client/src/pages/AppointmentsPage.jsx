@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import AppointmentList from '../components/AppointmentList.jsx';
+import ConsultationNotePanel from '../components/ConsultationNotePanel.jsx';
 import DashboardWelcome from '../components/DashboardWelcome.jsx';
 import HealthyLivingGuide from '../components/HealthyLivingGuide.jsx';
 import ReschedulePanel from '../components/ReschedulePanel.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { queryKeys, useAppointments, useClinicMutation, useDoctors, useUsers } from '../hooks/useClinicQueries.js';
+import {
+  queryKeys,
+  useAppointments,
+  useClinicMutation,
+  useConsultationNote,
+  useDoctors,
+  useUsers
+} from '../hooks/useClinicQueries.js';
 import { api } from '../api.js';
 
 export default function AppointmentsPage() {
@@ -14,6 +22,9 @@ export default function AppointmentsPage() {
   const users = useUsers(user.role === 'admin');
   const [rescheduling, setRescheduling] = useState(null);
   const [rescheduleMessage, setRescheduleMessage] = useState('');
+  const [noteAppointment, setNoteAppointment] = useState(null);
+  const [noteMessage, setNoteMessage] = useState(null);
+  const consultationNote = useConsultationNote(noteAppointment?._id);
   const cancelMutation = useClinicMutation({
     mutationFn: (id) => api(`/api/appointments/${id}/cancel`, { method: 'PATCH' }),
     invalidate: [queryKeys.appointments]
@@ -29,6 +40,14 @@ export default function AppointmentsPage() {
     }),
     invalidate: [queryKeys.appointments, queryKeys.allSlots]
   });
+  const noteMutation = useClinicMutation({
+    mutationFn: ({ id, note }) =>
+      api(`/api/appointments/${id}/consultation-note`, {
+        method: 'PUT',
+        body: JSON.stringify(note)
+      }),
+    invalidate: noteAppointment ? [queryKeys.consultationNote(noteAppointment._id)] : []
+  });
 
   async function reschedule(payload) {
     try {
@@ -40,6 +59,21 @@ export default function AppointmentsPage() {
       }, 1200);
     } catch (mutationError) {
       setRescheduleMessage(mutationError.message);
+    }
+  }
+
+  async function saveConsultationNote(note) {
+    try {
+      await noteMutation.mutateAsync({ id: noteAppointment._id, note });
+      setNoteMessage({
+        type: 'success',
+        text:
+          note.status === 'finalized'
+            ? 'Consultation note finalized for the patient.'
+            : 'Draft saved.'
+      });
+    } catch (mutationError) {
+      setNoteMessage({ type: 'error', text: mutationError.message });
     }
   }
 
@@ -59,6 +93,10 @@ export default function AppointmentsPage() {
           setRescheduling(appointment);
           setRescheduleMessage('');
         }}
+        onConsultationNote={(appointment) => {
+          setNoteAppointment(appointment);
+          setNoteMessage(null);
+        }}
       />
       {rescheduling && (
         <ReschedulePanel
@@ -67,6 +105,22 @@ export default function AppointmentsPage() {
           message={rescheduleMessage}
           onClose={() => setRescheduling(null)}
           onSubmit={reschedule}
+        />
+      )}
+      {noteAppointment && (
+        <ConsultationNotePanel
+          appointment={noteAppointment}
+          user={user}
+          note={consultationNote.data}
+          loading={consultationNote.isLoading}
+          error={consultationNote.error}
+          pending={noteMutation.isPending}
+          message={noteMessage}
+          onClose={() => {
+            setNoteAppointment(null);
+            setNoteMessage(null);
+          }}
+          onSubmit={saveConsultationNote}
         />
       )}
       <HealthyLivingGuide />

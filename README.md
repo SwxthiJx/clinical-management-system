@@ -22,6 +22,8 @@ A full-stack appointment management system for patients, doctors, and administra
 - Patient-visible doctor profiles with education, experience, languages, and clinical interests
 - Appointment confirmation, cancellation, completion, and reminder emails
 - Conflict-safe appointment rescheduling with fresh reminders and participant notifications
+- Structured doctor consultation notes with draft/finalized workflows
+- Patient-safe clinical note viewing with doctor-only private fields
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability
 - Schedule exceptions for blocked doctor dates
@@ -169,6 +171,22 @@ The machine-readable OpenAPI document is available at
 - `GET /api/users`
 - `POST /api/users/doctors`
 - `PATCH /api/users/:id/active`
+
+### Appointments
+
+- `GET /api/appointments`
+- `POST /api/appointments`
+- `GET /api/appointments/slots`
+- `PATCH /api/appointments/:id/reschedule`
+- `PATCH /api/appointments/:id/status`
+- `PATCH /api/appointments/:id/cancel`
+- `GET /api/appointments/:id/consultation-note`
+- `PUT /api/appointments/:id/consultation-note`
+
+The assigned doctor can save consultation notes as drafts and finalize them for the
+patient. Patients only receive finalized clinical fields. Private doctor notes remain
+visible only to the assigned doctor and administrators. Audit logs record note actions
+and revision numbers without storing clinical text.
 
 ## Authentication Security
 

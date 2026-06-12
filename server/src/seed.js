@@ -4,6 +4,7 @@ import { demoDoctorProfiles } from './data/demoDoctorProfiles.js';
 import { Appointment } from './models/Appointment.js';
 import { AuditLog } from './models/AuditLog.js';
 import { AuthToken } from './models/AuthToken.js';
+import { ConsultationNote } from './models/ConsultationNote.js';
 import { RefreshToken } from './models/RefreshToken.js';
 import { ScheduleException } from './models/ScheduleException.js';
 import { User } from './models/User.js';
@@ -11,6 +12,7 @@ import { connectDB } from './utils/db.js';
 
 async function seed() {
   await connectDB();
+  await ConsultationNote.deleteMany({});
   await Appointment.deleteMany({});
   await AuditLog.deleteMany({});
   await AuthToken.deleteMany({});

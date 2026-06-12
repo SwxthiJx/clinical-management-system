@@ -9,6 +9,7 @@ export const queryKeys = {
   auditLogs: ['audit-logs'],
   availability: (doctorId) => ['availability', doctorId],
   exceptions: (doctorId) => ['exceptions', doctorId],
+  consultationNote: (appointmentId) => ['consultation-note', appointmentId],
   allSlots: ['slots'],
   slots: (doctorId, date) => ['slots', doctorId, date]
 };
@@ -17,6 +18,17 @@ export function useAppointments() {
   return useQuery({
     queryKey: queryKeys.appointments,
     queryFn: () => api('/api/appointments').then((data) => data.appointments)
+  });
+}
+
+export function useConsultationNote(appointmentId) {
+  return useQuery({
+    queryKey: queryKeys.consultationNote(appointmentId),
+    queryFn: () =>
+      api(`/api/appointments/${appointmentId}/consultation-note`).then(
+        (data) => data.consultationNote
+      ),
+    enabled: Boolean(appointmentId)
   });
 }
 

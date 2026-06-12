@@ -9,7 +9,14 @@ const blockedKeys = new Set([
   'csrfToken',
   'cookie',
   'authorization',
-  'reason'
+  'reason',
+  'subjective',
+  'objective',
+  'assessment',
+  'plan',
+  'prescriptions',
+  'followUpInstructions',
+  'privateNotes'
 ]);
 
 function sanitize(value) {

@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { hasPermission } from '../config/permissions.js';
 import { assertStatusTransition, getSlotEnd, isInsideAvailability } from '../services/slotService.js';
 import { buildAppointmentMessage } from '../services/appointmentNotificationService.js';
-import { rescheduleAppointmentSchema } from '../schemas/appointmentSchemas.js';
+import {
+  consultationNoteSchema,
+  rescheduleAppointmentSchema
+} from '../schemas/appointmentSchemas.js';
+import { presentConsultationNote } from '../services/consultationNoteService.js';
 
 describe('appointment scheduling rules', () => {
   it('creates a 30-minute slot end', () => {
@@ -42,6 +46,12 @@ describe('role permissions', () => {
     expect(hasPermission({ role: 'patient' }, 'appointment:reschedule-any')).toBe(false);
     expect(hasPermission({ role: 'doctor' }, 'appointment:reschedule-assigned')).toBe(true);
     expect(hasPermission({ role: 'admin' }, 'appointment:reschedule-any')).toBe(true);
+  });
+
+  it('restricts consultation-note writing to assigned doctors', () => {
+    expect(hasPermission({ role: 'doctor' }, 'consultation-note:write-assigned')).toBe(true);
+    expect(hasPermission({ role: 'patient' }, 'consultation-note:write-assigned')).toBe(false);
+    expect(hasPermission({ role: 'admin' }, 'consultation-note:read-any')).toBe(true);
   });
 });
 
@@ -107,6 +117,56 @@ describe('reschedule validation', () => {
   it('rejects unexpected reschedule fields', () => {
     const result = rescheduleAppointmentSchema.safeParse({
       body: { startTime: '2026-06-20T09:00:00.000Z', doctorId: '507f1f77bcf86cd799439012' },
+      query: {},
+      params: { id: '507f1f77bcf86cd799439011' }
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('consultation note privacy and validation', () => {
+  it('removes doctor-only fields from a patient response', () => {
+    const presented = presentConsultationNote(
+      {
+        status: 'finalized',
+        assessment: 'Seasonal allergy',
+        privateNotes: 'Internal differential',
+        createdBy: 'doctor-1',
+        updatedBy: 'doctor-1'
+      },
+      'patient'
+    );
+
+    expect(presented.assessment).toBe('Seasonal allergy');
+    expect(presented).not.toHaveProperty('privateNotes');
+    expect(presented).not.toHaveProperty('createdBy');
+    expect(presented).not.toHaveProperty('updatedBy');
+  });
+
+  it('accepts a structured note with clinical content', () => {
+    const result = consultationNoteSchema.safeParse({
+      body: {
+        subjective: 'Persistent cough for three days',
+        objective: '',
+        assessment: 'Upper respiratory infection',
+        plan: 'Hydration and rest',
+        prescriptions: '',
+        followUpInstructions: '',
+        followUpDate: '2026-06-25',
+        privateNotes: '',
+        status: 'draft'
+      },
+      query: {},
+      params: { id: '507f1f77bcf86cd799439011' }
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects an empty consultation note', () => {
+    const result = consultationNoteSchema.safeParse({
+      body: { status: 'finalized' },
       query: {},
       params: { id: '507f1f77bcf86cd799439011' }
     });

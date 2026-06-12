@@ -1,7 +1,14 @@
-import { CalendarSync, CheckCircle2 } from 'lucide-react';
+import { CalendarSync, CheckCircle2, ClipboardPlus } from 'lucide-react';
 import { formatDateTime } from '../utils/formatters.js';
 
-export default function AppointmentList({ appointments, user, onCancel, onComplete, onReschedule }) {
+export default function AppointmentList({
+  appointments,
+  user,
+  onCancel,
+  onComplete,
+  onReschedule,
+  onConsultationNote
+}) {
   const heading = user.role === 'admin' ? 'All appointments' : 'My appointments';
   return (
     <section className="panel">
@@ -16,6 +23,16 @@ export default function AppointmentList({ appointments, user, onCancel, onComple
             </div>
             <div className="appointment-actions">
               <span className={`status ${appointment.status}`}>{appointment.status}</span>
+              <button
+                className="notes-action"
+                type="button"
+                onClick={() => onConsultationNote(appointment)}
+              >
+                <ClipboardPlus aria-hidden="true" />
+                {user.role === 'doctor' && appointment.status !== 'cancelled'
+                  ? 'Add / edit notes'
+                  : 'View notes'}
+              </button>
               {appointment.status === 'booked' && (
                 <>
                   <button type="button" onClick={() => onReschedule(appointment)}>

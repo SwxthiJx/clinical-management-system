@@ -31,6 +31,25 @@ export const openApiSpec = {
             }
           }
         }
+      },
+      ConsultationNoteInput: {
+        type: 'object',
+        required: ['status'],
+        properties: {
+          subjective: { type: 'string', maxLength: 4000 },
+          objective: { type: 'string', maxLength: 4000 },
+          assessment: { type: 'string', maxLength: 4000 },
+          plan: { type: 'string', maxLength: 4000 },
+          prescriptions: { type: 'string', maxLength: 4000 },
+          followUpInstructions: { type: 'string', maxLength: 2000 },
+          followUpDate: { type: 'string', format: 'date', nullable: true },
+          privateNotes: {
+            type: 'string',
+            maxLength: 4000,
+            description: 'Visible only to the assigned doctor and administrators'
+          },
+          status: { type: 'string', enum: ['draft', 'finalized'] }
+        }
       }
     }
   },
@@ -308,6 +327,44 @@ export const openApiSpec = {
         responses: {
           200: { description: 'Appointment rescheduled and participants notified' },
           409: { description: 'Slot conflict, blocked date, or terminal appointment status' }
+        }
+      }
+    },
+    '/appointments/{id}/consultation-note': {
+      get: {
+        tags: ['Appointments'],
+        summary: 'Get the consultation note visible to the current user',
+        description:
+          'Patients receive finalized notes without private doctor fields. Assigned doctors and administrators can review drafts.',
+        security: [{ cookieAuth: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: { description: 'Consultation note or null when no patient-visible note exists' },
+          403: { description: 'Appointment is outside the current user scope' }
+        }
+      },
+      put: {
+        tags: ['Appointments'],
+        summary: 'Create or update an appointment consultation note',
+        description: 'Only the doctor assigned to the appointment can write consultation notes.',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/ConsultationNoteInput' }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Consultation note saved' },
+          403: { description: 'Only the assigned doctor can update this note' },
+          409: { description: 'Cancelled appointment or invalid draft transition' }
         }
       }
     },

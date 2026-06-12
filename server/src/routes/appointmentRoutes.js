@@ -2,9 +2,11 @@ import { Router } from 'express';
 import {
   cancelAppointment,
   createAppointment,
+  getConsultationNote,
   listAppointments,
   listSlots,
   rescheduleAppointment,
+  saveConsultationNote,
   updateAppointmentStatus
 } from '../controllers/appointmentController.js';
 import { protect, requireAnyPermission } from '../middleware/authMiddleware.js';
@@ -13,6 +15,7 @@ import { validate } from '../middleware/validateMiddleware.js';
 import {
   appointmentIdSchema,
   appointmentStatusSchema,
+  consultationNoteSchema,
   createAppointmentSchema,
   rescheduleAppointmentSchema,
   slotQuerySchema
@@ -40,6 +43,25 @@ router.post(
   requireAnyPermission('appointment:create-own', 'appointment:create-any'),
   validate(createAppointmentSchema),
   createAppointment
+);
+router.get(
+  '/:id/consultation-note',
+  protect,
+  requireAnyPermission(
+    'consultation-note:read-own',
+    'consultation-note:read-assigned',
+    'consultation-note:read-any'
+  ),
+  validate(appointmentIdSchema),
+  getConsultationNote
+);
+router.put(
+  '/:id/consultation-note',
+  protect,
+  requireCsrf,
+  requireAnyPermission('consultation-note:write-assigned'),
+  validate(consultationNoteSchema),
+  saveConsultationNote
 );
 router.patch(
   '/:id/reschedule',
