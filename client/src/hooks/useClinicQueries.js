@@ -5,6 +5,8 @@ export const queryKeys = {
   appointments: ['appointments'],
   doctors: ['doctors'],
   users: ['users'],
+  systemStatus: ['system-status'],
+  auditLogs: ['audit-logs'],
   availability: (doctorId) => ['availability', doctorId],
   exceptions: (doctorId) => ['exceptions', doctorId],
   slots: (doctorId, date) => ['slots', doctorId, date]
@@ -28,6 +30,23 @@ export function useUsers(enabled) {
   return useQuery({
     queryKey: queryKeys.users,
     queryFn: () => api('/api/users').then((data) => data.users),
+    enabled
+  });
+}
+
+export function useSystemStatus(enabled) {
+  return useQuery({
+    queryKey: queryKeys.systemStatus,
+    queryFn: () => api('/api/system/status'),
+    enabled,
+    refetchInterval: 30_000
+  });
+}
+
+export function useAuditLogs(enabled) {
+  return useQuery({
+    queryKey: queryKeys.auditLogs,
+    queryFn: () => api('/api/system/audit-logs?limit=50').then((data) => data.auditLogs),
     enabled
   });
 }

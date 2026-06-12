@@ -1,4 +1,4 @@
-import { Activity, CalendarClock, CalendarPlus, ClipboardList, LogOut, ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
+import { Activity, CalendarClock, CalendarPlus, ClipboardList, LogOut, MonitorCog, ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { hospitalName } from '../constants.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -32,6 +32,7 @@ export default function AppLayout() {
         {user.role === 'patient' && <NavLink to="/book"><CalendarPlus aria-hidden="true" />Book</NavLink>}
         {user.role === 'doctor' && <NavLink to="/schedule"><CalendarClock aria-hidden="true" />Schedule</NavLink>}
         {user.role === 'admin' && <NavLink to="/admin"><ShieldCheck aria-hidden="true" />Admin</NavLink>}
+        {user.role === 'admin' && <NavLink to="/operations"><MonitorCog aria-hidden="true" />Operations</NavLink>}
         <NavLink to="/security"><UserRound aria-hidden="true" />Security</NavLink>
       </nav>
       <WellnessBanner role={user.role} />

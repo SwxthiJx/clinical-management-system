@@ -20,7 +20,8 @@ export const permissionsByRole = {
     'doctor:read',
     'doctor:create',
     'user:read-any',
-    'user:manage-any'
+    'user:manage-any',
+    'system:read'
   ])
 };
 

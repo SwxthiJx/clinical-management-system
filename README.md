@@ -30,6 +30,10 @@ A full-stack appointment management system for patients, doctors, and administra
 - TanStack Query caching and mutation invalidation
 - Repository/service/controller backend architecture
 - Interactive OpenAPI documentation
+- Structured JSON request and error logs
+- Liveness, readiness, and administrator operational metrics
+- Persistent audit trail for security-sensitive actions
+- Automated backend and frontend test suites
 
 ## Project Structure
 
@@ -46,6 +50,7 @@ server/src/
   repositories/ Database access
   models/       MongoDB domain models
   openapi/      OpenAPI specification
+  __tests__/    Backend API and domain tests
 ```
 
 ## Setup
@@ -81,6 +86,12 @@ npm run dev
 Frontend: `http://localhost:5173`  
 Backend: `http://localhost:5001`
 API docs: `http://localhost:5001/api/docs`
+
+Run all automated tests:
+
+```bash
+npm test
+```
 
 ## Demo Accounts
 
@@ -194,6 +205,13 @@ and the local ignored `.env` file.
 - `PATCH /api/appointments/:id/status`
 - `PATCH /api/appointments/:id/cancel`
 
+### Operations
+
+- `GET /api/health`
+- `GET /api/ready`
+- `GET /api/system/status` (admin)
+- `GET /api/system/audit-logs` (admin)
+
 ## Phase 2 Scheduling
 
 - Patients now select from generated available slots instead of guessing a date/time.
@@ -208,6 +226,15 @@ and the local ignored `.env` file.
 - TanStack Query centralizes server-state caching, loading states, and mutation refreshes.
 - Express controllers now delegate business rules to services and persistence to repositories.
 - OpenAPI and Swagger provide a browsable contract for the REST API.
+
+## Phase 4 Quality And Observability
+
+- Structured JSON logs include request IDs, response times, status codes, user context, and safe error details.
+- Liveness and readiness endpoints distinguish a running process from a database-ready service.
+- In-memory request metrics track traffic, server errors, active requests, and average response time.
+- Administrators have an Operations page for system health and recent audit activity.
+- MongoDB audit records capture important authentication, account, appointment, and scheduling changes without storing passwords, tokens, cookies, or medical reasons.
+- Vitest, Supertest, Testing Library, and jsdom cover backend APIs, domain rules, protected routes, and shared frontend guidance.
 
 ## Conflict-Free Booking
 

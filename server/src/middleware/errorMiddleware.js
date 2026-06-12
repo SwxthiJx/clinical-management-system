@@ -1,4 +1,5 @@
 import { AppError } from '../utils/AppError.js';
+import { logger } from '../utils/logger.js';
 
 export function notFound(req, res, next) {
   next(new AppError('Resource not found', 404, 'NOT_FOUND'));
@@ -19,7 +20,13 @@ export function errorHandler(error, req, res, _next) {
   const statusCode = isOperational ? normalized.statusCode : 500;
 
   if (!isOperational) {
-    console.error(`[${req.requestId}]`, error);
+    logger.error('Unhandled request error', {
+      requestId: req.requestId,
+      method: req.method,
+      path: req.originalUrl.split('?')[0],
+      userId: req.user?._id?.toString(),
+      error
+    });
   }
 
   res.status(statusCode).json({

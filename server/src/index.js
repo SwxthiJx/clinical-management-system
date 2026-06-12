@@ -1,17 +1,18 @@
 import { env } from './config/env.js';
 import app from './app.js';
 import { connectDB } from './utils/db.js';
+import { logger } from './utils/logger.js';
 
 const port = env.PORT;
 
 connectDB()
   .then(() => {
     const server = app.listen(port, () => {
-      console.log(`API running on http://localhost:${port}`);
+      logger.info('API server started', { port, environment: env.NODE_ENV });
     });
 
     const shutdown = (signal) => {
-      console.log(`${signal} received; closing HTTP server`);
+      logger.info('Shutdown signal received', { signal });
       server.close(() => process.exit(0));
     };
 
@@ -19,6 +20,6 @@ connectDB()
     process.on('SIGINT', () => shutdown('SIGINT'));
   })
   .catch((error) => {
-    console.error('Failed to start server:', error.message);
+    logger.error('Failed to start server', { error });
     process.exit(1);
   });

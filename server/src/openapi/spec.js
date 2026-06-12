@@ -10,7 +10,8 @@ export const openApiSpec = {
     { name: 'Auth' },
     { name: 'Users' },
     { name: 'Availability' },
-    { name: 'Appointments' }
+    { name: 'Appointments' },
+    { name: 'Operations' }
   ],
   components: {
     securitySchemes: {
@@ -36,6 +37,47 @@ export const openApiSpec = {
   paths: {
     '/health': {
       get: { summary: 'Health check', responses: { 200: { description: 'Healthy' } } }
+    },
+    '/ready': {
+      get: {
+        tags: ['Operations'],
+        summary: 'Check API and database readiness',
+        responses: {
+          200: { description: 'Ready to serve traffic' },
+          503: { description: 'A required dependency is unavailable' }
+        }
+      }
+    },
+    '/system/status': {
+      get: {
+        tags: ['Operations'],
+        summary: 'Get administrator operational metrics',
+        security: [{ cookieAuth: [] }],
+        responses: {
+          200: { description: 'System and request metrics' },
+          403: { description: 'Administrator permission required' }
+        }
+      }
+    },
+    '/system/audit-logs': {
+      get: {
+        tags: ['Operations'],
+        summary: 'List recent audit events',
+        security: [{ cookieAuth: [] }],
+        parameters: [
+          { in: 'query', name: 'limit', schema: { type: 'integer', minimum: 1, maximum: 200, default: 50 } },
+          { in: 'query', name: 'action', schema: { type: 'string' } },
+          {
+            in: 'query',
+            name: 'actorRole',
+            schema: { type: 'string', enum: ['patient', 'doctor', 'admin', 'system'] }
+          }
+        ],
+        responses: {
+          200: { description: 'Audit event list' },
+          403: { description: 'Administrator permission required' }
+        }
+      }
     },
     '/auth/login': {
       post: {

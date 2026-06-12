@@ -9,6 +9,7 @@ import {
   revokeRefreshToken,
   rotateSession
 } from '../services/authService.js';
+import { recordAuditEvent } from '../services/auditService.js';
 import {
   isMailConfigured,
   sendPasswordResetEmail,
@@ -59,6 +60,14 @@ export const register = asyncHandler(async (req, res) => {
     24 * 60 * 60 * 1000
   );
   await sendVerificationEmail(user, verificationToken);
+  await recordAuditEvent({
+    req,
+    actor: user,
+    action: 'account.registered',
+    entityType: 'user',
+    entityId: user._id,
+    metadata: { role: user.role }
+  });
 
   res.status(201).json({
     message: 'Account created. Check your email to verify your account.',
@@ -95,6 +104,14 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   const { csrfToken } = await createSession(user, req, res);
+  await recordAuditEvent({
+    req,
+    actor: user,
+    action: 'authentication.login',
+    entityType: 'session',
+    entityId: user._id,
+    metadata: { role: user.role }
+  });
   res.json({ user: safeUser(user), csrfToken });
 });
 
@@ -149,6 +166,12 @@ export const verifyEmail = asyncHandler(async (req, res) => {
   }
 
   await User.updateOne({ _id: stored.user }, { emailVerifiedAt: new Date() });
+  await recordAuditEvent({
+    req,
+    action: 'account.email_verified',
+    entityType: 'user',
+    entityId: stored.user
+  });
 
   res.json({ message: 'Email verified. You can now sign in.' });
 });
@@ -210,6 +233,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.authVersion += 1;
   await user.save();
   await revokeAllUserSessions(user._id);
+  await recordAuditEvent({
+    req,
+    actor: user,
+    action: 'account.password_reset',
+    entityType: 'user',
+    entityId: user._id
+  });
 
   clearSessionCookies(res);
 
@@ -228,6 +258,13 @@ export const changePassword = asyncHandler(async (req, res) => {
   user.authVersion += 1;
   await user.save();
   await revokeAllUserSessions(user._id);
+  await recordAuditEvent({
+    req,
+    actor: user,
+    action: 'account.password_changed',
+    entityType: 'user',
+    entityId: user._id
+  });
   clearSessionCookies(res);
 
   res.json({ message: 'Password changed. Sign in again on your devices.' });

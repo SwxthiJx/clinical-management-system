@@ -1,6 +1,7 @@
 import './config/env.js';
 import { buildDemoPatients } from './data/demoPatients.js';
 import { Appointment } from './models/Appointment.js';
+import { AuditLog } from './models/AuditLog.js';
 import { AuthToken } from './models/AuthToken.js';
 import { RefreshToken } from './models/RefreshToken.js';
 import { ScheduleException } from './models/ScheduleException.js';
@@ -10,6 +11,7 @@ import { connectDB } from './utils/db.js';
 async function seed() {
   await connectDB();
   await Appointment.deleteMany({});
+  await AuditLog.deleteMany({});
   await AuthToken.deleteMany({});
   await RefreshToken.deleteMany({});
   await ScheduleException.deleteMany({});

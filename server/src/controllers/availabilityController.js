@@ -7,6 +7,7 @@ import {
   removeScheduleException,
   resolveDoctorId
 } from '../services/availabilityManagementService.js';
+import { recordAuditEvent } from '../services/auditService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const getAvailability = asyncHandler(async (req, res) => {
@@ -21,12 +22,27 @@ export const addAvailability = asyncHandler(async (req, res) => {
     doctorId,
     window: { dayOfWeek, startTime, endTime }
   });
+  const createdWindow = availability[availability.length - 1];
+  await recordAuditEvent({
+    req,
+    action: 'availability.created',
+    entityType: 'availability',
+    entityId: createdWindow?._id,
+    metadata: { doctorId, dayOfWeek, startTime, endTime }
+  });
   res.status(201).json({ availability });
 });
 
 export const deleteAvailability = asyncHandler(async (req, res) => {
   const doctorId = resolveDoctorId(req.user, req.validated.query.doctorId);
   const availability = await removeDoctorAvailability({ doctorId, windowId: req.params.id });
+  await recordAuditEvent({
+    req,
+    action: 'availability.deleted',
+    entityType: 'availability',
+    entityId: req.params.id,
+    metadata: { doctorId }
+  });
   res.json({ availability });
 });
 
@@ -43,11 +59,25 @@ export const addException = asyncHandler(async (req, res) => {
     reason: req.validated.body.reason,
     createdBy: req.user._id
   });
+  await recordAuditEvent({
+    req,
+    action: 'schedule_exception.created',
+    entityType: 'schedule_exception',
+    entityId: exception._id,
+    metadata: { doctorId, date: exception.date }
+  });
   res.status(201).json({ exception });
 });
 
 export const deleteException = asyncHandler(async (req, res) => {
   const doctorId = resolveDoctorId(req.user, req.validated.query.doctorId);
   await removeScheduleException({ doctorId, exceptionId: req.params.id });
+  await recordAuditEvent({
+    req,
+    action: 'schedule_exception.deleted',
+    entityType: 'schedule_exception',
+    entityId: req.params.id,
+    metadata: { doctorId }
+  });
   res.status(204).send();
 });

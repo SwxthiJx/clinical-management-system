@@ -737,6 +737,106 @@ textarea {
   background: #dfe8ed;
 }
 
+.system-state {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.system-state.operational {
+  background: #e8f5f3;
+  color: #11635e;
+}
+
+.system-state.degraded {
+  background: #fff3dd;
+  color: #875b0d;
+}
+
+.operations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #e4ebef;
+}
+
+.operations-grid > div {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 3px 10px;
+  padding: 18px;
+  border-right: 1px solid #e4ebef;
+  border-bottom: 1px solid #e4ebef;
+}
+
+.operations-grid > div:nth-child(3n) {
+  border-right: 0;
+}
+
+.operations-grid > div:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.operations-grid svg {
+  grid-row: 1 / 3;
+  width: 22px;
+  height: 22px;
+  color: #16756f;
+}
+
+.operations-grid strong {
+  overflow: hidden;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.operations-grid span {
+  color: #697782;
+  font-size: 0.8rem;
+}
+
+.audit-list {
+  display: grid;
+}
+
+.audit-entry {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) minmax(180px, auto);
+  gap: 12px;
+  align-items: center;
+  padding: 13px 0;
+  border-top: 1px solid #e4ebef;
+}
+
+.audit-entry > svg {
+  width: 20px;
+  height: 20px;
+  color: #16756f;
+}
+
+.audit-entry strong {
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.audit-entry p,
+.audit-context {
+  font-size: 0.8rem;
+}
+
+.audit-context {
+  display: grid;
+  gap: 3px;
+  color: #697782;
+  text-align: right;
+}
+
 .healthy-living {
   margin-top: 18px;
   padding: 22px;
@@ -845,8 +945,29 @@ textarea {
   }
 
   .metric-row,
-  .welcome-metrics {
+  .welcome-metrics,
+  .operations-grid {
     grid-template-columns: 1fr;
+  }
+
+  .operations-grid > div,
+  .operations-grid > div:nth-child(3n),
+  .operations-grid > div:nth-last-child(-n + 3) {
+    border-right: 0;
+    border-bottom: 1px solid #e4ebef;
+  }
+
+  .operations-grid > div:last-child {
+    border-bottom: 0;
+  }
+
+  .audit-entry {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .audit-context {
+    grid-column: 2;
+    text-align: left;
   }
 
   .healthy-living-heading,
