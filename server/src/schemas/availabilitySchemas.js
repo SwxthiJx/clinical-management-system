@@ -31,3 +31,27 @@ export const deleteAvailabilitySchema = z.object({
   query: z.object({ doctorId: objectId.optional() }),
   params: z.object({ id: objectId })
 });
+
+export const listExceptionsSchema = z.object({
+  body: z.object({}).passthrough(),
+  query: z.object({ doctorId: objectId.optional() }),
+  params: z.object({}).passthrough()
+});
+
+export const addExceptionSchema = z.object({
+  body: z
+    .object({
+      doctorId: objectId.optional(),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+      reason: z.string().trim().max(200).optional().default('')
+    })
+    .strict(),
+  query: z.object({}).passthrough(),
+  params: z.object({}).passthrough()
+});
+
+export const deleteExceptionSchema = z.object({
+  body: z.object({}).passthrough(),
+  query: z.object({ doctorId: objectId.optional() }),
+  params: z.object({ id: objectId })
+});

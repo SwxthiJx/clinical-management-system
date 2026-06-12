@@ -1,0 +1,29 @@
+import { User } from '../models/User.js';
+
+export function findActiveDoctorById(id, select = '') {
+  const query = User.findOne({
+    _id: id,
+    role: 'doctor',
+    isActive: true,
+    approvedAt: { $ne: null }
+  });
+  return select ? query.select(select) : query;
+}
+
+export function findActivePatientById(id) {
+  return User.findOne({ _id: id, role: 'patient', isActive: true }).select('_id');
+}
+
+export function listActiveDoctors() {
+  return User.find({ role: 'doctor', isActive: true, approvedAt: { $ne: null } })
+    .select('name username email specialty phone availability')
+    .sort({ name: 1 })
+    .lean();
+}
+
+export function listAllUsers() {
+  return User.find()
+    .select('name username email role specialty phone isActive emailVerifiedAt approvedAt createdAt')
+    .sort({ createdAt: -1 })
+    .lean();
+}

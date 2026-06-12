@@ -20,14 +20,32 @@ A full-stack appointment management system for patients, doctors, and administra
 - Request validation and API rate limiting
 - Doctor availability management
 - Conflict-free appointment booking
+- Generated bookable slots from doctor availability
+- Schedule exceptions for blocked doctor dates
+- Idempotent booking requests for safer retries
+- Appointment status transition rules
 - Appointment status updates and cancellation
 - Admin dashboard for users and all appointments
+- Role-aware routed frontend pages with protected navigation
+- TanStack Query caching and mutation invalidation
+- Repository/service/controller backend architecture
+- Interactive OpenAPI documentation
 
 ## Project Structure
 
 ```text
-client/   React frontend
-server/   Express API and MongoDB models
+client/src/
+  components/   Shared interface components
+  contexts/     Authentication state
+  hooks/        TanStack Query API hooks
+  pages/        Role-aware routed pages
+
+server/src/
+  controllers/  HTTP request and response adapters
+  services/     Business rules and use cases
+  repositories/ Database access
+  models/       MongoDB domain models
+  openapi/      OpenAPI specification
 ```
 
 ## Setup
@@ -62,6 +80,7 @@ npm run dev
 
 Frontend: `http://localhost:5173`  
 Backend: `http://localhost:5001`
+API docs: `http://localhost:5001/api/docs`
 
 ## Demo Accounts
 
@@ -81,10 +100,35 @@ npm run seed --prefix server
 | Doctor | dr-kabir-sen | Doctor123! |
 | Doctor | dr-sara-thomas | Doctor123! |
 | Patient | alex-patient | Patient123! |
+| Patient | priya-nair | Patient123! |
+| Patient | rahul-verma | Patient123! |
+| Patient | ananya-sharma | Patient123! |
+| Patient | vikram-patel | Patient123! |
+| Patient | meera-joseph | Patient123! |
 
 Email login also works.
 
+To add only missing demo patients without deleting current data, run:
+
+```bash
+npm run seed:patients --prefix server
+```
+
+Demo credentials are never displayed by default. To show the demo account picker
+temporarily during local development, create `client/.env.local` with:
+
+```env
+VITE_SHOW_DEMO_LOGINS=true
+```
+
+Do not enable this setting in a deployed environment. Seeded demo accounts should
+also be removed or assigned unique passwords before production deployment.
+
 ## API Overview
+
+The machine-readable OpenAPI document is available at
+`GET /api/openapi.json`. Interactive Swagger documentation is served at
+`GET /api/docs`.
 
 ### Auth
 
@@ -145,9 +189,25 @@ and the local ignored `.env` file.
 ### Appointments
 
 - `GET /api/appointments`
+- `GET /api/appointments/slots`
 - `POST /api/appointments`
 - `PATCH /api/appointments/:id/status`
 - `PATCH /api/appointments/:id/cancel`
+
+## Phase 2 Scheduling
+
+- Patients now select from generated available slots instead of guessing a date/time.
+- Doctors can block full dates as schedule exceptions.
+- Booking requests can include an `idempotencyKey` so retrying the same request does not create duplicates.
+- Appointments can transition from `booked` to `completed` or `cancelled`; terminal statuses cannot be changed again.
+
+## Phase 3 Architecture
+
+- React Router separates login, appointments, booking, schedule, admin, and security pages.
+- Protected routes and role checks keep users within their permitted workflows.
+- TanStack Query centralizes server-state caching, loading states, and mutation refreshes.
+- Express controllers now delegate business rules to services and persistence to repositories.
+- OpenAPI and Swagger provide a browsable contract for the REST API.
 
 ## Conflict-Free Booking
 

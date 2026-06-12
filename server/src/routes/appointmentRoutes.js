@@ -3,6 +3,7 @@ import {
   cancelAppointment,
   createAppointment,
   listAppointments,
+  listSlots,
   updateAppointmentStatus
 } from '../controllers/appointmentController.js';
 import { protect, requireAnyPermission } from '../middleware/authMiddleware.js';
@@ -11,7 +12,8 @@ import { validate } from '../middleware/validateMiddleware.js';
 import {
   appointmentIdSchema,
   appointmentStatusSchema,
-  createAppointmentSchema
+  createAppointmentSchema,
+  slotQuerySchema
 } from '../schemas/appointmentSchemas.js';
 
 const router = Router();
@@ -21,6 +23,13 @@ router.get(
   protect,
   requireAnyPermission('appointment:read-own', 'appointment:read-assigned', 'appointment:read-any'),
   listAppointments
+);
+router.get(
+  '/slots',
+  protect,
+  requireAnyPermission('appointment:create-own', 'appointment:create-any', 'doctor:read'),
+  validate(slotQuerySchema),
+  listSlots
 );
 router.post(
   '/',

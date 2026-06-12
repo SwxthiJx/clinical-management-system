@@ -18,6 +18,10 @@ function createTransport() {
   });
 }
 
+export function isMailConfigured() {
+  return Boolean(process.env.SMTP_HOST);
+}
+
 async function sendMail({ to, subject, text }) {
   const transport = createTransport();
 
@@ -37,7 +41,7 @@ async function sendMail({ to, subject, text }) {
 }
 
 export async function sendVerificationEmail(user, token) {
-  const url = `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/?verifyToken=${encodeURIComponent(token)}`;
+  const url = `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/login?verifyToken=${encodeURIComponent(token)}`;
   await sendMail({
     to: user.email,
     subject: 'Verify your Aarogya Care Hospital account',
@@ -46,7 +50,7 @@ export async function sendVerificationEmail(user, token) {
 }
 
 export async function sendPasswordResetEmail(user, token) {
-  const url = `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/?resetToken=${encodeURIComponent(token)}`;
+  const url = `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/login?resetToken=${encodeURIComponent(token)}`;
   await sendMail({
     to: user.email,
     subject: 'Reset your Aarogya Care Hospital password',

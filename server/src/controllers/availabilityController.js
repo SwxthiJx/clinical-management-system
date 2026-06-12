@@ -1,75 +1,53 @@
-import { User } from '../models/User.js';
-import { AppError } from '../utils/AppError.js';
+import {
+  addDoctorAvailability,
+  addScheduleException,
+  getDoctorAvailability,
+  getScheduleExceptions,
+  removeDoctorAvailability,
+  removeScheduleException,
+  resolveDoctorId
+} from '../services/availabilityManagementService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-
-function resolveDoctorId(req) {
-  if (req.user.role === 'doctor') {
-    return req.user._id;
-  }
-
-  return req.validated.body.doctorId || req.validated.query.doctorId;
-}
 
 export const getAvailability = asyncHandler(async (req, res) => {
   const doctorId = req.validated.query.doctorId || req.user._id;
-  const doctor = await User.findOne({
-    _id: doctorId,
-    role: 'doctor',
-    isActive: true,
-    approvedAt: { $ne: null }
-  })
-    .select('name specialty availability')
-    .lean();
-
-  if (!doctor) {
-    throw new AppError('Doctor not found', 404, 'DOCTOR_NOT_FOUND');
-  }
-
-  res.json({ doctor });
+  res.json({ doctor: await getDoctorAvailability(doctorId) });
 });
 
 export const addAvailability = asyncHandler(async (req, res) => {
-  const doctorId = resolveDoctorId(req);
-  if (!doctorId) {
-    throw new AppError('Doctor is required', 400, 'DOCTOR_REQUIRED');
-  }
-
+  const doctorId = resolveDoctorId(req.user, req.validated.body.doctorId);
   const { dayOfWeek, startTime, endTime } = req.validated.body;
-  const doctor = await User.findOne({
-    _id: doctorId,
-    role: 'doctor',
-    isActive: true,
-    approvedAt: { $ne: null }
+  const availability = await addDoctorAvailability({
+    doctorId,
+    window: { dayOfWeek, startTime, endTime }
   });
-
-  if (!doctor) {
-    throw new AppError('Doctor not found', 404, 'DOCTOR_NOT_FOUND');
-  }
-
-  doctor.availability.push({ dayOfWeek, startTime, endTime });
-  await doctor.save();
-
-  res.status(201).json({ availability: doctor.availability });
+  res.status(201).json({ availability });
 });
 
 export const deleteAvailability = asyncHandler(async (req, res) => {
-  const doctorId = req.user.role === 'doctor' ? req.user._id : req.validated.query.doctorId;
-  if (!doctorId) {
-    throw new AppError('Doctor is required', 400, 'DOCTOR_REQUIRED');
-  }
+  const doctorId = resolveDoctorId(req.user, req.validated.query.doctorId);
+  const availability = await removeDoctorAvailability({ doctorId, windowId: req.params.id });
+  res.json({ availability });
+});
 
-  const doctor = await User.findOne({ _id: doctorId, role: 'doctor' });
-  if (!doctor) {
-    throw new AppError('Doctor not found', 404, 'DOCTOR_NOT_FOUND');
-  }
+export const listExceptions = asyncHandler(async (req, res) => {
+  const doctorId = resolveDoctorId(req.user, req.validated.query.doctorId);
+  res.json({ exceptions: await getScheduleExceptions(doctorId) });
+});
 
-  const window = doctor.availability.id(req.params.id);
-  if (!window) {
-    throw new AppError('Availability window not found', 404, 'AVAILABILITY_NOT_FOUND');
-  }
+export const addException = asyncHandler(async (req, res) => {
+  const doctorId = resolveDoctorId(req.user, req.validated.body.doctorId);
+  const exception = await addScheduleException({
+    doctorId,
+    date: req.validated.body.date,
+    reason: req.validated.body.reason,
+    createdBy: req.user._id
+  });
+  res.status(201).json({ exception });
+});
 
-  window.deleteOne();
-  await doctor.save();
-
-  res.json({ availability: doctor.availability });
+export const deleteException = asyncHandler(async (req, res) => {
+  const doctorId = resolveDoctorId(req.user, req.validated.query.doctorId);
+  await removeScheduleException({ doctorId, exceptionId: req.params.id });
+  res.status(204).send();
 });

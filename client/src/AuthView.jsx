@@ -1,8 +1,11 @@
 import { CalendarClock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
+import PasswordInput from './PasswordInput.jsx';
 
 const hospitalName = 'Aarogya Care Hospital';
+const showDemoLogins =
+  import.meta.env.DEV && import.meta.env.VITE_SHOW_DEMO_LOGINS === 'true';
 const demoLogins = [
   { role: 'Patient', name: 'Alex Patient', login: 'alex-patient', password: 'Patient123!' },
   { role: 'Doctor', name: 'Dr. Maya Rao', login: 'dr-maya-rao', password: 'Doctor123!' },
@@ -22,13 +25,14 @@ export default function AuthView({ onAuth }) {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    login: 'alex-patient',
-    password: 'Patient123!',
+    login: '',
+    password: '',
     phone: '',
     newPassword: ''
   });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [verificationUrl, setVerificationUrl] = useState('');
 
   useEffect(() => {
     if (!verifyToken) return;
@@ -48,6 +52,7 @@ export default function AuthView({ onAuth }) {
     setMode(nextMode);
     setError('');
     setMessage('');
+    setVerificationUrl('');
   }
 
   async function submit(event) {
@@ -76,6 +81,7 @@ export default function AuthView({ onAuth }) {
           })
         });
         setMessage(data.message);
+        setVerificationUrl(data.developmentVerificationUrl || '');
         return;
       }
 
@@ -159,7 +165,11 @@ export default function AuthView({ onAuth }) {
           {(mode === 'login' || mode === 'register') && (
             <label>
               Password
-              <input type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required />
+              <PasswordInput
+                value={form.password}
+                onChange={(event) => setForm({ ...form, password: event.target.value })}
+                required
+              />
               {mode === 'register' && <small>Use 10+ characters with uppercase, lowercase, number, and symbol.</small>}
             </label>
           )}
@@ -167,12 +177,21 @@ export default function AuthView({ onAuth }) {
           {mode === 'reset' && (
             <label>
               New password
-              <input type="password" value={form.newPassword} onChange={(event) => setForm({ ...form, newPassword: event.target.value })} required />
+              <PasswordInput
+                value={form.newPassword}
+                onChange={(event) => setForm({ ...form, newPassword: event.target.value })}
+                required
+              />
             </label>
           )}
 
           {error && <p className="error">{error}</p>}
           {message && <p className="success-message">{message}</p>}
+          {verificationUrl && (
+            <a className="verification-link" href={verificationUrl}>
+              Verify this development account
+            </a>
+          )}
 
           <button className="primary" type="submit">
             {mode === 'login' && 'Sign in'}
@@ -193,7 +212,7 @@ export default function AuthView({ onAuth }) {
           </button>
         )}
 
-        {mode === 'login' && (
+        {mode === 'login' && showDemoLogins && (
           <div className="demo-logins">
             <h2>Demo logins</h2>
             {demoLogins.map((account) => (

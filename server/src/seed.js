@@ -1,7 +1,9 @@
 import './config/env.js';
+import { buildDemoPatients } from './data/demoPatients.js';
 import { Appointment } from './models/Appointment.js';
 import { AuthToken } from './models/AuthToken.js';
 import { RefreshToken } from './models/RefreshToken.js';
+import { ScheduleException } from './models/ScheduleException.js';
 import { User } from './models/User.js';
 import { connectDB } from './utils/db.js';
 
@@ -10,6 +12,7 @@ async function seed() {
   await Appointment.deleteMany({});
   await AuthToken.deleteMany({});
   await RefreshToken.deleteMany({});
+  await ScheduleException.deleteMany({});
   await User.deleteMany({});
 
   await User.create([
@@ -118,16 +121,7 @@ async function seed() {
         { dayOfWeek: 5, startTime: '15:00', endTime: '19:00' }
       ]
     },
-    {
-      name: 'Alex Patient',
-      username: 'alex-patient',
-      email: 'patient@clinic.local',
-      password: 'Patient123!',
-      role: 'patient',
-      phone: '555-0199',
-      emailVerifiedAt: new Date(),
-      approvedAt: new Date()
-    }
+    ...buildDemoPatients()
   ]);
 
   console.log('Seed data created');

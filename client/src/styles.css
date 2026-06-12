@@ -143,6 +143,38 @@ textarea:focus {
   border-color: #16756f;
 }
 
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: 46px;
+}
+
+.password-input button {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  transform: translateY(-50%);
+  border-radius: 6px;
+  background: transparent;
+  color: #697782;
+}
+
+.password-input button:hover {
+  background: #edf2f5;
+  color: #17212b;
+}
+
+.password-input svg {
+  width: 18px;
+  height: 18px;
+}
+
 textarea {
   min-height: 92px;
   resize: vertical;
@@ -176,6 +208,18 @@ textarea {
   color: #11635e;
   border: 1px solid #bee3d8;
   line-height: 1.45;
+}
+
+.verification-link {
+  display: inline-flex;
+  justify-content: center;
+  min-height: 42px;
+  align-items: center;
+  border-radius: 6px;
+  background: #e8f1fb;
+  color: #255c91;
+  font-weight: 750;
+  text-decoration: none;
 }
 
 .stack small {
@@ -239,6 +283,47 @@ textarea {
   align-items: center;
   gap: 18px;
   margin-bottom: 24px;
+}
+
+.app-nav {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 5px;
+  overflow-x: auto;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(23, 33, 43, 0.04);
+}
+
+.app-nav a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 13px;
+  border-radius: 6px;
+  color: #52616c;
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.app-nav a:hover {
+  background: #edf5f4;
+  color: #11635e;
+}
+
+.app-nav a.active {
+  background: #16756f;
+  color: #ffffff;
+}
+
+.app-nav svg {
+  width: 17px;
+  height: 17px;
 }
 
 .profile-pill {
@@ -392,6 +477,34 @@ textarea {
   border: 1px solid #bee3d8;
 }
 
+.slot-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.slot-picker button {
+  min-height: 38px;
+  border-radius: 6px;
+  padding: 0 12px;
+  background: #edf2f5;
+  color: #35444f;
+  font-weight: 750;
+}
+
+.slot-picker button:hover,
+.slot-picker button.active {
+  background: #16756f;
+  color: #ffffff;
+}
+
+.empty.compact {
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+}
+
 .selected-doctor span,
 .doctor-directory span {
   color: #697782;
@@ -528,6 +641,20 @@ textarea {
   font-size: 0.85rem;
 }
 
+.chip-button {
+  border-radius: 999px;
+  background: #edf2f5;
+  color: #35444f;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.chip-button:hover {
+  background: #fdeaea;
+  color: #9d1b16;
+}
+
 .metric-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -558,7 +685,7 @@ textarea {
 
 .user-row {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 0.7fr 0.7fr;
+  grid-template-columns: 1fr 1.4fr 0.7fr 0.8fr 0.8fr;
   gap: 10px;
   padding: 10px 0;
   border-bottom: 1px solid #edf2f5;
@@ -597,5 +724,15 @@ textarea {
   .metric-row,
   .welcome-metrics {
     grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    width: min(100% - 20px, 1180px);
+    padding-top: 16px;
+  }
+
+  .app-nav a {
+    min-height: 38px;
+    padding: 0 11px;
   }
 }

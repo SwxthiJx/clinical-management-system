@@ -1,0 +1,258 @@
+export const openApiSpec = {
+  openapi: '3.0.3',
+  info: {
+    title: 'Aarogya Care Hospital API',
+    version: '1.0.0',
+    description: 'Authentication, doctor scheduling, and appointment management API.'
+  },
+  servers: [{ url: '/api' }],
+  tags: [
+    { name: 'Auth' },
+    { name: 'Users' },
+    { name: 'Availability' },
+    { name: 'Appointments' }
+  ],
+  components: {
+    securitySchemes: {
+      cookieAuth: { type: 'apiKey', in: 'cookie', name: 'clinic_access' },
+      csrf: { type: 'apiKey', in: 'header', name: 'X-CSRF-Token' }
+    },
+    schemas: {
+      Error: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'object',
+            properties: {
+              code: { type: 'string' },
+              message: { type: 'string' },
+              requestId: { type: 'string' }
+            }
+          }
+        }
+      }
+    }
+  },
+  paths: {
+    '/health': {
+      get: { summary: 'Health check', responses: { 200: { description: 'Healthy' } } }
+    },
+    '/auth/login': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Create a cookie session',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['login', 'password'],
+                properties: { login: { type: 'string' }, password: { type: 'string' } }
+              }
+            }
+          }
+        },
+        responses: { 200: { description: 'Authenticated' }, 401: { description: 'Invalid credentials' } }
+      }
+    },
+    '/auth/register': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Register a patient account',
+        responses: { 201: { description: 'Patient created' } }
+      }
+    },
+    '/auth/me': {
+      get: {
+        tags: ['Auth'],
+        summary: 'Get current user',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'Current user' } }
+      }
+    },
+    '/auth/refresh': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Rotate the refresh session',
+        security: [{ csrf: [] }],
+        responses: { 200: { description: 'Session refreshed' } }
+      }
+    },
+    '/auth/logout': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Revoke the current refresh session',
+        security: [{ csrf: [] }],
+        responses: { 204: { description: 'Signed out' } }
+      }
+    },
+    '/auth/verify-email': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Verify a patient email address',
+        responses: { 200: { description: 'Email verified' } }
+      }
+    },
+    '/auth/resend-verification': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Request a new verification link',
+        responses: { 200: { description: 'Request accepted' } }
+      }
+    },
+    '/auth/forgot-password': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Request a password reset link',
+        responses: { 200: { description: 'Request accepted' } }
+      }
+    },
+    '/auth/reset-password': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Reset a password with a reset token',
+        responses: { 200: { description: 'Password reset' } }
+      }
+    },
+    '/auth/change-password': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Change the current password and revoke other sessions',
+        security: [{ cookieAuth: [], csrf: [] }],
+        responses: { 200: { description: 'Password changed' } }
+      }
+    },
+    '/users': {
+      get: {
+        tags: ['Users'],
+        summary: 'List all users',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'User list' } }
+      }
+    },
+    '/users/doctors': {
+      get: {
+        tags: ['Users'],
+        summary: 'List active approved doctors',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'Doctor list' } }
+      },
+      post: {
+        tags: ['Users'],
+        summary: 'Create a doctor account',
+        security: [{ cookieAuth: [], csrf: [] }],
+        responses: { 201: { description: 'Doctor created' } }
+      }
+    },
+    '/users/{id}/active': {
+      patch: {
+        tags: ['Users'],
+        summary: 'Activate or deactivate a user',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: { 200: { description: 'User status updated' } }
+      }
+    },
+    '/availability': {
+      get: {
+        tags: ['Availability'],
+        summary: 'Get doctor availability',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'Availability' } }
+      },
+      post: {
+        tags: ['Availability'],
+        summary: 'Add an availability window',
+        security: [{ cookieAuth: [], csrf: [] }],
+        responses: { 201: { description: 'Window added' } }
+      }
+    },
+    '/availability/{id}': {
+      delete: {
+        tags: ['Availability'],
+        summary: 'Delete an availability window',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: { 204: { description: 'Window deleted' } }
+      }
+    },
+    '/availability/exceptions': {
+      get: {
+        tags: ['Availability'],
+        summary: 'List blocked dates',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'Exception list' } }
+      },
+      post: {
+        tags: ['Availability'],
+        summary: 'Block a doctor date',
+        security: [{ cookieAuth: [], csrf: [] }],
+        responses: { 201: { description: 'Date blocked' } }
+      }
+    },
+    '/availability/exceptions/{id}': {
+      delete: {
+        tags: ['Availability'],
+        summary: 'Delete a blocked date',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: { 204: { description: 'Exception deleted' } }
+      }
+    },
+    '/appointments': {
+      get: {
+        tags: ['Appointments'],
+        summary: 'List appointments visible to the current user',
+        security: [{ cookieAuth: [] }],
+        responses: { 200: { description: 'Appointment list' } }
+      },
+      post: {
+        tags: ['Appointments'],
+        summary: 'Book an appointment',
+        security: [{ cookieAuth: [], csrf: [] }],
+        responses: { 201: { description: 'Appointment booked' }, 409: { description: 'Conflict' } }
+      }
+    },
+    '/appointments/slots': {
+      get: {
+        tags: ['Appointments'],
+        summary: 'Generate available slots for a doctor and date',
+        security: [{ cookieAuth: [] }],
+        parameters: [
+          { in: 'query', name: 'doctorId', required: true, schema: { type: 'string' } },
+          { in: 'query', name: 'date', required: true, schema: { type: 'string', format: 'date' } }
+        ],
+        responses: { 200: { description: 'Available slots' } }
+      }
+    },
+    '/appointments/{id}/status': {
+      patch: {
+        tags: ['Appointments'],
+        summary: 'Update an appointment status',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: { 200: { description: 'Appointment updated' } }
+      }
+    },
+    '/appointments/{id}/cancel': {
+      patch: {
+        tags: ['Appointments'],
+        summary: 'Cancel an appointment',
+        security: [{ cookieAuth: [], csrf: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: { 200: { description: 'Appointment cancelled' } }
+      }
+    }
+  }
+};

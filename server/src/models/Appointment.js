@@ -35,6 +35,11 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       enum: ['patient', 'doctor', 'admin', null],
       default: null
+    },
+    idempotencyKey: {
+      type: String,
+      trim: true,
+      default: null
     }
   },
   { timestamps: true }
@@ -50,5 +55,12 @@ appointmentSchema.index(
 
 appointmentSchema.index({ patient: 1, startTime: 1 });
 appointmentSchema.index({ doctor: 1, startTime: 1, endTime: 1 });
+appointmentSchema.index(
+  { patient: 1, idempotencyKey: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { idempotencyKey: { $type: 'string' } }
+  }
+);
 
 export const Appointment = mongoose.model('Appointment', appointmentSchema);

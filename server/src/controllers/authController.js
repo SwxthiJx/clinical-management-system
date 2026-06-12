@@ -9,7 +9,11 @@ import {
   revokeRefreshToken,
   rotateSession
 } from '../services/authService.js';
-import { sendPasswordResetEmail, sendVerificationEmail } from '../services/mailService.js';
+import {
+  isMailConfigured,
+  sendPasswordResetEmail,
+  sendVerificationEmail
+} from '../services/mailService.js';
 import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { createRandomToken, hashToken } from '../utils/crypto.js';
@@ -57,7 +61,12 @@ export const register = asyncHandler(async (req, res) => {
   await sendVerificationEmail(user, verificationToken);
 
   res.status(201).json({
-    message: 'Account created. Check your email to verify your account.'
+    message: 'Account created. Check your email to verify your account.',
+    ...(!isMailConfigured() && process.env.NODE_ENV !== 'production'
+      ? {
+          developmentVerificationUrl: `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/login?verifyToken=${encodeURIComponent(verificationToken)}`
+        }
+      : {})
   });
 });
 
@@ -147,13 +156,20 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 export const resendVerification = asyncHandler(async (req, res) => {
   const { email } = req.validated.body;
   const user = await User.findOne({ email: email.toLowerCase() });
+  let developmentVerificationUrl;
 
   if (user && !user.emailVerifiedAt) {
     const token = await createPurposeToken(user._id, 'email_verification', 24 * 60 * 60 * 1000);
     await sendVerificationEmail(user, token);
+    if (!isMailConfigured() && process.env.NODE_ENV !== 'production') {
+      developmentVerificationUrl = `${process.env.APP_BASE_URL || process.env.CLIENT_URL}/login?verifyToken=${encodeURIComponent(token)}`;
+    }
   }
 
-  res.json({ message: 'If the account exists and is unverified, a new email has been sent.' });
+  res.json({
+    message: 'If the account exists and is unverified, a new email has been sent.',
+    ...(developmentVerificationUrl ? { developmentVerificationUrl } : {})
+  });
 });
 
 export const forgotPassword = asyncHandler(async (req, res) => {
