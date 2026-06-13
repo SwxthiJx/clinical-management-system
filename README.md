@@ -27,6 +27,7 @@ A full-stack appointment management system for patients, doctors, and administra
 - Secure patient medical profiles for allergies, conditions, medications, age, blood group, and emergency contacts
 - Appointment-scoped medical profile access for assigned doctors
 - Doctor search by name with specialty filtering
+- Admin analytics for appointment volume, cancellations, active patients, doctor utilization, and specialty demand
 - Appointment filtering by status and date for every role
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability

@@ -9,3 +9,13 @@ export const auditLogQuerySchema = z.object({
     actorRole: z.enum(['patient', 'doctor', 'admin', 'system']).optional()
   })
 });
+
+export const analyticsQuerySchema = z.object({
+  body: z.object({}).passthrough(),
+  params: z.object({}).passthrough(),
+  query: z.object({
+    days: z.coerce.number().int().refine((value) => [30, 90, 180].includes(value), {
+      message: 'Analytics range must be 30, 90, or 180 days'
+    }).default(30)
+  })
+});

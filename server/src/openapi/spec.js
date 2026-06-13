@@ -121,6 +121,24 @@ export const openApiSpec = {
         }
       }
     },
+    '/system/analytics': {
+      get: {
+        tags: ['Operations'],
+        summary: 'Get administrator appointment and workforce analytics',
+        security: [{ cookieAuth: [] }],
+        parameters: [
+          {
+            in: 'query',
+            name: 'days',
+            schema: { type: 'integer', enum: [30, 90, 180], default: 30 }
+          }
+        ],
+        responses: {
+          200: { description: 'Appointment trends, patient activity, utilization, and specialties' },
+          403: { description: 'Administrator permission required' }
+        }
+      }
+    },
     '/auth/login': {
       post: {
         tags: ['Auth'],

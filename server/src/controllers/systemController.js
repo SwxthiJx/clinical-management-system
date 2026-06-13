@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { listAuditEvents } from '../services/auditService.js';
+import { getAdminAnalytics } from '../services/adminAnalyticsService.js';
 import { getMetricsSnapshot } from '../services/metricsService.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -32,4 +33,8 @@ export const systemStatus = (_req, res) => {
 
 export const auditLogs = asyncHandler(async (req, res) => {
   res.json({ auditLogs: await listAuditEvents(req.validated.query) });
+});
+
+export const adminAnalytics = asyncHandler(async (req, res) => {
+  res.json({ analytics: await getAdminAnalytics(req.validated.query) });
 });

@@ -9,6 +9,7 @@ import {
 import { patientMedicalProfileSchema } from '../schemas/userSchemas.js';
 import { presentPatientMedicalProfile } from '../services/patientMedicalProfileService.js';
 import { presentConsultationNote } from '../services/consultationNoteService.js';
+import { buildAdminAnalytics } from '../services/adminAnalyticsService.js';
 
 describe('appointment scheduling rules', () => {
   it('creates a 30-minute slot end', () => {
@@ -62,6 +63,46 @@ describe('role permissions', () => {
     expect(hasPermission({ role: 'doctor' }, 'medical-profile:read-assigned')).toBe(true);
     expect(hasPermission({ role: 'doctor' }, 'medical-profile:write-own')).toBe(false);
     expect(hasPermission({ role: 'admin' }, 'medical-profile:read-any')).toBe(true);
+  });
+});
+
+describe('admin analytics', () => {
+  it('summarizes appointment demand, cancellations, patients, and utilization', () => {
+    const doctor = {
+      _id: 'doctor-1',
+      name: 'Dr. Maya Rao',
+      specialty: 'General Medicine',
+      availability: [{ dayOfWeek: 1, startTime: '09:00', endTime: '10:00' }]
+    };
+    const analytics = buildAdminAnalytics({
+      appointments: [
+        {
+          patient: 'patient-1',
+          doctor,
+          startTime: new Date('2026-06-08T09:00:00'),
+          status: 'booked'
+        },
+        {
+          patient: 'patient-2',
+          doctor,
+          startTime: new Date('2026-06-08T09:30:00'),
+          status: 'cancelled'
+        }
+      ],
+      doctors: [doctor],
+      exceptions: [],
+      activePatientCount: 9,
+      days: 30,
+      now: new Date('2026-06-13T12:00:00')
+    });
+
+    expect(analytics.summary.appointmentCount).toBe(2);
+    expect(analytics.summary.cancellationRate).toBe(50);
+    expect(analytics.summary.activePatients).toBe(1);
+    expect(analytics.summary.registeredActivePatients).toBe(9);
+    expect(analytics.summary.topSpecialty).toBe('General Medicine');
+    expect(analytics.doctorUtilization[0].occupiedSlots).toBe(1);
+    expect(analytics.popularSpecialties[0].appointmentCount).toBe(2);
   });
 });
 

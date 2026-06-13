@@ -6,6 +6,7 @@ export const queryKeys = {
   doctors: ['doctors'],
   users: ['users'],
   systemStatus: ['system-status'],
+  adminAnalytics: (days) => ['admin-analytics', days],
   auditLogs: ['audit-logs'],
   availability: (doctorId) => ['availability', doctorId],
   exceptions: (doctorId) => ['exceptions', doctorId],
@@ -73,6 +74,15 @@ export function useAuditLogs(enabled) {
   return useQuery({
     queryKey: queryKeys.auditLogs,
     queryFn: () => api('/api/system/audit-logs?limit=50').then((data) => data.auditLogs),
+    enabled
+  });
+}
+
+export function useAdminAnalytics(days, enabled) {
+  return useQuery({
+    queryKey: queryKeys.adminAnalytics(days),
+    queryFn: () =>
+      api(`/api/system/analytics?days=${days}`).then((data) => data.analytics),
     enabled
   });
 }

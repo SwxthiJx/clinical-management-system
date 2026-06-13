@@ -1405,6 +1405,230 @@ textarea {
   text-align: right;
 }
 
+.analytics-header {
+  margin-bottom: 0;
+}
+
+.analytics-range {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #e8eef2;
+}
+
+.analytics-range button {
+  min-height: 34px;
+  border-radius: 6px;
+  padding: 0 12px;
+  background: transparent;
+  color: #52616c;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.analytics-range button.active {
+  background: #ffffff;
+  color: #17212b;
+  box-shadow: 0 2px 8px rgba(23, 33, 43, 0.08);
+}
+
+.analytics-period {
+  margin-top: 10px;
+  font-size: 0.84rem;
+}
+
+.analytics-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.analytics-metric {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 11px;
+  padding: 16px;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.analytics-metric > svg {
+  width: 38px;
+  height: 38px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #e9f4f1;
+  color: #16756f;
+}
+
+.analytics-metric div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.analytics-metric span,
+.analytics-metric small {
+  color: #697782;
+  font-size: 0.75rem;
+}
+
+.analytics-metric strong {
+  overflow-wrap: anywhere;
+  font-size: 1.25rem;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.analytics-chart {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.analytics-chart:last-child {
+  grid-column: 1 / -1;
+}
+
+.chart-heading {
+  margin-bottom: 18px;
+}
+
+.chart-heading h3 {
+  margin: 0 0 4px;
+  font-size: 0.98rem;
+}
+
+.chart-heading p {
+  font-size: 0.8rem;
+}
+
+.vertical-chart {
+  min-height: 240px;
+  display: flex;
+  align-items: stretch;
+  gap: 5px;
+  overflow-x: auto;
+  padding: 8px 2px 0;
+}
+
+.vertical-chart-column {
+  min-width: 18px;
+  flex: 1 0 18px;
+  display: grid;
+  grid-template-rows: 20px 170px 34px;
+  gap: 5px;
+  align-items: end;
+  text-align: center;
+}
+
+.chart-value {
+  color: #697782;
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.vertical-chart-track {
+  height: 170px;
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid #c9d5dc;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 41px,
+    #edf2f5 42px
+  );
+}
+
+.vertical-chart-track div {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: #16756f;
+}
+
+.vertical-chart.cancellations .vertical-chart-track div {
+  background: #c75a63;
+}
+
+.vertical-chart.patients .vertical-chart-track div {
+  background: #3f88c5;
+}
+
+.chart-label {
+  overflow: hidden;
+  color: #697782;
+  font-size: 0.62rem;
+  line-height: 1.15;
+}
+
+.ranked-chart {
+  display: grid;
+  gap: 14px;
+}
+
+.ranked-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(140px, 1.4fr) 54px;
+  gap: 12px;
+  align-items: center;
+}
+
+.ranked-label {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.ranked-label strong,
+.ranked-label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranked-label strong {
+  font-size: 0.86rem;
+}
+
+.ranked-label span {
+  color: #697782;
+  font-size: 0.72rem;
+}
+
+.ranked-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #e8eef2;
+}
+
+.ranked-track div {
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: #3f88c5;
+}
+
+.ranked-chart.percentage .ranked-track div {
+  background: #16756f;
+}
+
+.ranked-value {
+  color: #35444f;
+  font-size: 0.82rem;
+  text-align: right;
+}
+
 .healthy-living {
   margin-top: 18px;
   padding: 22px;
@@ -1517,8 +1741,18 @@ textarea {
 
   .metric-row,
   .welcome-metrics,
-  .operations-grid {
+  .operations-grid,
+  .analytics-metrics,
+  .analytics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .analytics-chart:last-child {
+    grid-column: auto;
+  }
+
+  .ranked-row {
+    grid-template-columns: minmax(120px, 0.8fr) minmax(90px, 1fr) 48px;
   }
 
   .operations-grid > div,

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './components/AppLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AdminPage from './pages/AdminPage.jsx';
+import AnalyticsPage from './pages/AnalyticsPage.jsx';
 import AppointmentsPage from './pages/AppointmentsPage.jsx';
 import DoctorSchedulePage from './pages/DoctorSchedulePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/medical-profile" element={<MedicalProfilePage />} />
           <Route path="/schedule" element={<DoctorSchedulePage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/operations" element={<SystemPage />} />
           <Route path="/security" element={<SecurityPage />} />
         </Route>

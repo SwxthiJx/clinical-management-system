@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { api } from '../api.js';
+import { api, authenticationRequiredEvent } from '../api.js';
 
 const AuthContext = createContext(null);
 
@@ -10,11 +10,19 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    function clearExpiredSession() {
+      setUser(null);
+      queryClient.clear();
+    }
+
+    window.addEventListener(authenticationRequiredEvent, clearExpiredSession);
     api('/api/auth/me')
       .then((data) => setUser(data.user))
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
-  }, []);
+
+    return () => window.removeEventListener(authenticationRequiredEvent, clearExpiredSession);
+  }, [queryClient]);
 
   async function logout() {
     try {

@@ -1,4 +1,5 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+export const authenticationRequiredEvent = 'clinic:authentication-required';
 
 function getCookie(name) {
   return document.cookie
@@ -43,6 +44,9 @@ export async function api(path, options = {}, allowRefresh = true) {
 
   const data = await parseResponse(response);
   if (!response.ok) {
+    if (response.status === 401 && allowRefresh) {
+      window.dispatchEvent(new Event(authenticationRequiredEvent));
+    }
     const error = new Error(data?.error?.message || 'Request failed');
     error.code = data?.error?.code;
     error.details = data?.error?.details;
