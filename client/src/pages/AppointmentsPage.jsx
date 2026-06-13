@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import AppointmentFilters, {
+  emptyAppointmentFilters,
+  filterAppointments
+} from '../components/AppointmentFilters.jsx';
 import AppointmentList from '../components/AppointmentList.jsx';
 import ConsultationNotePanel from '../components/ConsultationNotePanel.jsx';
 import DashboardWelcome from '../components/DashboardWelcome.jsx';
@@ -27,6 +31,7 @@ export default function AppointmentsPage() {
   const [noteAppointment, setNoteAppointment] = useState(null);
   const [noteMessage, setNoteMessage] = useState(null);
   const [profilePatient, setProfilePatient] = useState(null);
+  const [appointmentFilters, setAppointmentFilters] = useState(emptyAppointmentFilters);
   const consultationNote = useConsultationNote(noteAppointment?._id);
   const medicalProfile = useMedicalProfile(profilePatient?._id);
   const cancelMutation = useClinicMutation({
@@ -52,6 +57,10 @@ export default function AppointmentsPage() {
       }),
     invalidate: noteAppointment ? [queryKeys.consultationNote(noteAppointment._id)] : []
   });
+  const filteredAppointments = useMemo(
+    () => filterAppointments(appointments.data || [], appointmentFilters),
+    [appointments.data, appointmentFilters]
+  );
 
   async function reschedule(payload) {
     try {
@@ -88,8 +97,18 @@ export default function AppointmentsPage() {
     <>
       {error && <p className="error">{error.message}</p>}
       <DashboardWelcome user={user} appointments={appointments.data || []} doctors={doctors.data || []} users={users.data || []} />
+      <AppointmentFilters
+        filters={appointmentFilters}
+        resultCount={filteredAppointments.length}
+        onChange={(field, value) =>
+          setAppointmentFilters((current) => ({ ...current, [field]: value }))
+        }
+        onReset={() => setAppointmentFilters(emptyAppointmentFilters)}
+      />
       <AppointmentList
-        appointments={appointments.data || []}
+        appointments={filteredAppointments}
+        totalAppointments={appointments.data?.length || 0}
+        hasFilters={Boolean(appointmentFilters.status || appointmentFilters.date)}
         user={user}
         onCancel={(id) => cancelMutation.mutate(id)}
         onComplete={(id) => completeMutation.mutate(id)}

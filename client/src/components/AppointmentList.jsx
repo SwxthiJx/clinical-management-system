@@ -3,6 +3,8 @@ import { formatDateTime } from '../utils/formatters.js';
 
 export default function AppointmentList({
   appointments,
+  totalAppointments = appointments.length,
+  hasFilters = false,
   user,
   onCancel,
   onComplete,
@@ -13,7 +15,10 @@ export default function AppointmentList({
   const heading = user.role === 'admin' ? 'All appointments' : 'My appointments';
   return (
     <section className="panel">
-      <div className="panel-heading"><h2>{heading}</h2><span>{appointments.length} total</span></div>
+      <div className="panel-heading">
+        <h2>{heading}</h2>
+        <span>{hasFilters ? `${appointments.length} of ${totalAppointments}` : `${appointments.length} total`}</span>
+      </div>
       <div className="appointment-list">
         {appointments.map((appointment) => (
           <article className="appointment-card" key={appointment._id}>
@@ -60,7 +65,11 @@ export default function AppointmentList({
             </div>
           </article>
         ))}
-        {!appointments.length && <p className="empty">No appointments found.</p>}
+        {!appointments.length && (
+          <p className="empty">
+            {hasFilters ? 'No appointments match these filters.' : 'No appointments found.'}
+          </p>
+        )}
       </div>
     </section>
   );

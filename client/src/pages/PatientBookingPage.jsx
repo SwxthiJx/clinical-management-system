@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
+import DoctorFilters, {
+  emptyDoctorFilters,
+  filterDoctors
+} from '../components/DoctorFilters.jsx';
 import DoctorProfileCard from '../components/DoctorProfileCard.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useDoctors, useSlots } from '../hooks/useClinicQueries.js';
@@ -10,6 +14,7 @@ export default function PatientBookingPage() {
   const { user } = useAuth();
   const doctorsQuery = useDoctors();
   const [form, setForm] = useState({ doctorId: '', date: tomorrowDate(), startTime: '', reason: '' });
+  const [filters, setFilters] = useState(emptyDoctorFilters);
   const slotsQuery = useSlots(form.doctorId, form.date);
   const [message, setMessage] = useState('');
   const booking = useClinicMutation({
@@ -23,9 +28,29 @@ export default function PatientBookingPage() {
     }
   }, [doctorsQuery.data, form.doctorId]);
 
-  if (user.role !== 'patient') return <Navigate to="/appointments" replace />;
   const doctors = doctorsQuery.data || [];
+  const specialties = useMemo(
+    () => [...new Set(doctors.map((doctor) => doctor.specialty).filter(Boolean))].sort(),
+    [doctors]
+  );
+  const filteredDoctors = useMemo(() => filterDoctors(doctors, filters), [doctors, filters]);
   const selectedDoctor = doctors.find((doctor) => doctor._id === form.doctorId);
+
+  useEffect(() => {
+    if (
+      filteredDoctors.length &&
+      !filteredDoctors.some((doctor) => doctor._id === form.doctorId)
+    ) {
+      setForm((current) => ({
+        ...current,
+        doctorId: filteredDoctors[0]._id,
+        startTime: ''
+      }));
+    }
+  }, [filteredDoctors, form.doctorId]);
+
+  if (user.role !== 'patient') return <Navigate to="/appointments" replace />;
+  if (doctorsQuery.isLoading) return <main className="loading">Loading doctor directory...</main>;
 
   async function submit(event) {
     event.preventDefault();
@@ -51,8 +76,15 @@ export default function PatientBookingPage() {
           <div><span className="eyebrow">Medical team</span><h2>Choose your doctor</h2></div>
           <span>{doctors.length} profiles</span>
         </div>
+        <DoctorFilters
+          filters={filters}
+          specialties={specialties}
+          resultCount={filteredDoctors.length}
+          onChange={(field, value) => setFilters((current) => ({ ...current, [field]: value }))}
+          onReset={() => setFilters(emptyDoctorFilters)}
+        />
         <div className="doctor-profile-grid">
-          {doctors.map((doctor) => (
+          {filteredDoctors.map((doctor) => (
             <DoctorProfileCard
               doctor={doctor}
               key={doctor._id}
@@ -60,6 +92,9 @@ export default function PatientBookingPage() {
               onSelect={(doctorId) => setForm({ ...form, doctorId, startTime: '' })}
             />
           ))}
+          {!filteredDoctors.length && (
+            <p className="empty doctor-filter-empty">No doctors match these filters.</p>
+          )}
         </div>
       </section>
 

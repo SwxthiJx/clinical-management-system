@@ -515,6 +515,93 @@ textarea {
   gap: 14px;
 }
 
+.filter-surface,
+.appointment-filters {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid #dce5ea;
+  border-radius: 8px;
+  background: #f8fafb;
+}
+
+.filter-surface {
+  grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 1fr);
+}
+
+.appointment-filters {
+  grid-template-columns: minmax(160px, 0.5fr) minmax(190px, 0.6fr) minmax(230px, 1fr);
+  align-items: end;
+}
+
+.filter-surface label,
+.appointment-filters label {
+  min-width: 0;
+}
+
+.search-field > div {
+  position: relative;
+}
+
+.search-field svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  color: #697782;
+  transform: translateY(-50%);
+}
+
+.search-field input {
+  padding-left: 40px;
+}
+
+.filter-summary {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 2px;
+  color: #52616c;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.appointment-filters .filter-summary {
+  grid-column: auto;
+  min-height: 42px;
+  padding: 0;
+}
+
+.filter-summary button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 0 10px;
+  background: #edf2f5;
+  color: #35444f;
+  font-weight: 750;
+}
+
+.filter-summary button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.filter-summary svg {
+  width: 16px;
+  height: 16px;
+}
+
+.doctor-filter-empty {
+  grid-column: 1 / -1;
+}
+
 .doctor-profile-card {
   display: grid;
   align-content: start;
@@ -1422,7 +1509,9 @@ textarea {
   .availability-form,
   .user-row,
   .demo-logins button,
-  .doctor-profile-grid {
+  .doctor-profile-grid,
+  .filter-surface,
+  .appointment-filters {
     grid-template-columns: 1fr;
   }
 
@@ -1466,6 +1555,10 @@ textarea {
 
   .medical-profile-heading {
     align-items: flex-start;
+  }
+
+  .appointment-filters .filter-summary {
+    grid-column: 1;
   }
 
   .audit-context {
