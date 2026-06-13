@@ -1,5 +1,7 @@
 # Clinic Appointment Scheduling System
 
+deployed link-https://aarogya-care-jadg.onrender.com
+
 A full-stack appointment management system for patients, doctors, and administrators.
 
 ## Tech Stack
