@@ -10,14 +10,15 @@ import MedicalProfilePage from './pages/MedicalProfilePage.jsx';
 import PatientBookingPage from './pages/PatientBookingPage.jsx';
 import SecurityPage from './pages/SecurityPage.jsx';
 import SystemPage from './pages/SystemPage.jsx';
+import WelcomePage from './pages/WelcomePage.jsx';
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<WelcomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
-          <Route index element={<Navigate to="/appointments" replace />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/book" element={<PatientBookingPage />} />
           <Route path="/medical-profile" element={<MedicalProfilePage />} />

@@ -30,6 +30,168 @@ button {
   cursor: pointer;
 }
 
+.welcome-shell {
+  width: min(1120px, calc(100% - 40px));
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 32px;
+  margin: 0 auto;
+  padding: 34px 0 24px;
+}
+
+.welcome-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.welcome-brand > svg {
+  width: 42px;
+  height: 42px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #16756f;
+  color: #ffffff;
+}
+
+.welcome-brand span {
+  display: block;
+  margin-bottom: 2px;
+  color: #697782;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.welcome-brand h1 {
+  font-size: 1.35rem;
+}
+
+.welcome-intro {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  align-items: end;
+  padding-top: 28px;
+  border-top: 1px solid #dce5ea;
+}
+
+.welcome-intro h2 {
+  max-width: 620px;
+  margin-top: 6px;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.welcome-intro p {
+  max-width: 390px;
+  line-height: 1.55;
+}
+
+.role-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-self: center;
+}
+
+.role-choice {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #d6e1e7;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #17212b;
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(23, 33, 43, 0.07);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.role-choice:hover {
+  border-color: #6aa99d;
+  box-shadow: 0 18px 42px rgba(23, 33, 43, 0.11);
+  transform: translateY(-3px);
+}
+
+.role-choice:focus-visible {
+  outline: 3px solid rgba(22, 117, 111, 0.22);
+  outline-offset: 3px;
+}
+
+.role-choice img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: block;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.role-choice-content {
+  display: grid;
+  gap: 11px;
+  padding: 18px;
+}
+
+.role-choice-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.role-choice-title svg {
+  width: 22px;
+  height: 22px;
+  color: #16756f;
+}
+
+.role-choice h3 {
+  margin: 0;
+  font-size: 1.12rem;
+}
+
+.role-choice p {
+  min-height: 44px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.role-choice-content > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #e4ebef;
+  color: #11635e;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.role-choice-content > span svg {
+  width: 18px;
+  height: 18px;
+}
+
+.role-patient .role-choice-title svg {
+  color: #3f88c5;
+}
+
+.role-admin .role-choice-title svg {
+  color: #b45d65;
+}
+
+.welcome-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #dce5ea;
+  color: #697782;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
 .auth-shell,
 .loading {
   min-height: 100vh;
@@ -108,6 +270,37 @@ p {
   background: #ffffff;
   color: #17212b;
   box-shadow: 0 2px 8px rgba(23, 33, 43, 0.08);
+}
+
+.auth-mode-title {
+  margin: 24px 0;
+  padding: 12px;
+  border-radius: 6px;
+  background: #edf5f4;
+  color: #11635e;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.role-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  color: #52616c;
+  font-size: 0.82rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.role-back-link:hover {
+  color: #11635e;
+}
+
+.role-back-link svg {
+  width: 17px;
+  height: 17px;
 }
 
 .stack,
@@ -1721,6 +1914,38 @@ textarea {
 }
 
 @media (max-width: 860px) {
+  .welcome-shell {
+    width: min(620px, calc(100% - 28px));
+    gap: 24px;
+    padding-top: 22px;
+  }
+
+  .welcome-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 22px;
+  }
+
+  .welcome-intro h2 {
+    font-size: 1.55rem;
+  }
+
+  .role-choice-grid {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .role-choice {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .role-choice img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
   .topbar,
   .appointment-card {
     align-items: stretch;
@@ -1838,6 +2063,21 @@ textarea {
 }
 
 @media (max-width: 560px) {
+  .role-choice {
+    grid-template-columns: 1fr;
+  }
+
+  .role-choice img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .welcome-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
   .habit-grid {
     grid-template-columns: 1fr;
   }

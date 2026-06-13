@@ -1,5 +1,6 @@
-import { CalendarClock } from 'lucide-react';
+import { ArrowLeft, CalendarClock } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from './api.js';
 import PasswordInput from './PasswordInput.jsx';
 
@@ -17,7 +18,13 @@ const demoLogins = [
   { role: 'Admin', name: 'Clinic Admin', login: 'clinic-admin', password: 'Admin1234!' }
 ];
 
-export default function AuthView({ onAuth }) {
+const roleLabels = {
+  patient: 'Patient',
+  doctor: 'Doctor',
+  admin: 'Administrator'
+};
+
+export default function AuthView({ onAuth, selectedRole }) {
   const query = new URLSearchParams(window.location.search);
   const resetToken = query.get('resetToken');
   const verifyToken = query.get('verifyToken');
@@ -115,19 +122,25 @@ export default function AuthView({ onAuth }) {
           <CalendarClock aria-hidden="true" />
           <div>
             <h1>{hospitalName}</h1>
-            <p>Welcome to your secure clinic appointment portal.</p>
+            <p>
+              {roleLabels[selectedRole]
+                ? `${roleLabels[selectedRole]} access`
+                : 'Welcome to your secure clinic appointment portal.'}
+            </p>
           </div>
         </div>
 
         {mode !== 'forgot' && mode !== 'reset' && (
-          <div className="segmented">
-            <button className={mode === 'login' ? 'active' : ''} onClick={() => switchMode('login')} type="button">
-              Login
-            </button>
-            <button className={mode === 'register' ? 'active' : ''} onClick={() => switchMode('register')} type="button">
-              Patient registration
-            </button>
-          </div>
+          selectedRole === 'patient' || !roleLabels[selectedRole] ? (
+            <div className="segmented">
+              <button className={mode === 'login' ? 'active' : ''} onClick={() => switchMode('login')} type="button">
+                Login
+              </button>
+              <button className={mode === 'register' ? 'active' : ''} onClick={() => switchMode('register')} type="button">
+                Patient registration
+              </button>
+            </div>
+          ) : <div className="auth-mode-title">{roleLabels[selectedRole]} login</div>
         )}
 
         <form onSubmit={submit} className="stack">
@@ -211,6 +224,10 @@ export default function AuthView({ onAuth }) {
             Back to login
           </button>
         )}
+
+        <Link className="role-back-link" to="/">
+          <ArrowLeft aria-hidden="true" />Choose another account type
+        </Link>
 
         {mode === 'login' && showDemoLogins && (
           <div className="demo-logins">

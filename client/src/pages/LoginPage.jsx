@@ -6,9 +6,11 @@ export default function LoginPage() {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const selectedRole = new URLSearchParams(location.search).get('role');
   if (user) return <Navigate to="/appointments" replace />;
   return (
     <AuthView
+      selectedRole={selectedRole}
       onAuth={(nextUser) => {
         setUser(nextUser);
         navigate(location.state?.from || '/appointments', { replace: true });
