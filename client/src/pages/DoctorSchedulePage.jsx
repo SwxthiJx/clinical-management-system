@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { CalendarRange } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
+import PageHeader from '../components/PageHeader.jsx';
 import { days } from '../constants.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useAvailability, useClinicMutation, useExceptions } from '../hooks/useClinicQueries.js';
@@ -30,6 +32,12 @@ export default function DoctorSchedulePage() {
 
   return (
     <div className="main-column">
+      <PageHeader
+        eyebrow="Doctor workspace"
+        title="Schedule and availability"
+        description="Set recurring consultation hours and block dates when you are unavailable."
+        icon={CalendarRange}
+      />
       <section className="panel">
         <div className="panel-heading"><h2>Availability</h2><span>{availability.data?.length || 0} windows</span></div>
         <form className="availability-form" onSubmit={async (event) => {

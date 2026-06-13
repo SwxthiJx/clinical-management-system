@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
+import { UsersRound } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
 import PasswordInput from '../PasswordInput.jsx';
+import PageHeader from '../components/PageHeader.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useUsers } from '../hooks/useClinicQueries.js';
 
@@ -51,6 +53,12 @@ export default function AdminPage() {
 
   return (
     <div className="main-column">
+      <PageHeader
+        eyebrow="Administration"
+        title="People and access"
+        description="Create clinician accounts and manage access across the hospital workspace."
+        icon={UsersRound}
+      />
       <section className="panel">
         <div className="panel-heading"><h2>Create doctor account</h2><span>Admin approved</span></div>
         <form className="grid-form" onSubmit={async (event) => {
@@ -78,7 +86,28 @@ export default function AdminPage() {
       <section className="panel">
         <div className="panel-heading"><h2>Administration</h2><span>{users.length} users</span></div>
         <div className="metric-row"><div><strong>{counts.patient || 0}</strong><span>Patients</span></div><div><strong>{counts.doctor || 0}</strong><span>Doctors</span></div><div><strong>{counts.admin || 0}</strong><span>Admins</span></div></div>
-        <div className="user-table">{users.map((item) => <div className="user-row" key={item._id}><span>{item.name}</span><span>{item.email}</span><span>{item.role}</span><span>{item.emailVerifiedAt ? 'Verified' : 'Unverified'}</span><button className="compact-button" type="button" onClick={() => toggleUser.mutate(item)}>{item.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
+        <div className="user-table">
+          <div className="user-row user-table-header" aria-hidden="true">
+            <span>Name</span><span>Email</span><span>Role</span><span>Verification</span><span>Access</span>
+          </div>
+          {users.map((item) => (
+            <div className="user-row" key={item._id}>
+              <strong>{item.name}</strong>
+              <span>{item.email}</span>
+              <span className={`role-badge ${item.role}`}>{item.role}</span>
+              <span className={`verification-badge ${item.emailVerifiedAt ? 'verified' : 'unverified'}`}>
+                {item.emailVerifiedAt ? 'Verified' : 'Unverified'}
+              </span>
+              <button
+                className={`compact-button ${item.isActive ? 'deactivate-button' : 'activate-button'}`}
+                type="button"
+                onClick={() => toggleUser.mutate(item)}
+              >
+                {item.isActive ? 'Deactivate' : 'Activate'}
+              </button>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

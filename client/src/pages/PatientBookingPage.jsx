@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { CalendarPlus } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { api } from '../api.js';
 import DoctorFilters, {
@@ -6,6 +7,7 @@ import DoctorFilters, {
   filterDoctors
 } from '../components/DoctorFilters.jsx';
 import DoctorProfileCard from '../components/DoctorProfileCard.jsx';
+import PageHeader from '../components/PageHeader.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useDoctors, useSlots } from '../hooks/useClinicQueries.js';
 import { createIdempotencyKey, tomorrowDate } from '../utils/formatters.js';
@@ -71,6 +73,12 @@ export default function PatientBookingPage() {
 
   return (
     <div className="main-column">
+      <PageHeader
+        eyebrow="Appointments"
+        title="Book a consultation"
+        description="Find the right clinician, review their profile, and choose an available time."
+        icon={CalendarPlus}
+      />
       <section className="panel">
         <div className="panel-heading">
           <div><span className="eyebrow">Medical team</span><h2>Choose your doctor</h2></div>

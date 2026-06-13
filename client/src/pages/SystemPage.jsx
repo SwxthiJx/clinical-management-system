@@ -1,5 +1,6 @@
 import { Activity, Clock3, Database, Gauge, ScrollText, Server } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import PageHeader from '../components/PageHeader.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useAuditLogs, useSystemStatus } from '../hooks/useClinicQueries.js';
 import { formatDateTime } from '../utils/formatters.js';
@@ -25,6 +26,12 @@ export default function SystemPage() {
 
   return (
     <div className="main-column">
+      <PageHeader
+        eyebrow="Infrastructure"
+        title="System operations"
+        description="Monitor service health, performance indicators, and recent security activity."
+        icon={Server}
+      />
       {error && <p className="error">{error.message}</p>}
       <section className="panel">
         <div className="panel-heading">

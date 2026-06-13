@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { HeartPulse, Save } from 'lucide-react';
 import { api } from '../api.js';
+import PageHeader from '../components/PageHeader.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { queryKeys, useClinicMutation, useMedicalProfile } from '../hooks/useClinicQueries.js';
 
@@ -86,15 +87,14 @@ export default function MedicalProfilePage() {
   }
 
   return (
-    <section className="panel medical-profile-editor">
-      <div className="medical-profile-heading">
-        <div>
-          <span className="eyebrow">Private health information</span>
-          <h2>My medical profile</h2>
-          <p>Keep these details current so authorized clinicians can provide safer care.</p>
-        </div>
-        <HeartPulse aria-hidden="true" />
-      </div>
+    <div className="main-column">
+      <PageHeader
+        eyebrow="Private health information"
+        title="My medical profile"
+        description="Keep these details current so authorized clinicians can provide safer care."
+        icon={HeartPulse}
+      />
+      <section className="panel medical-profile-editor">
 
       {profileQuery.error && <p className="error">{profileQuery.error.message}</p>}
 
@@ -166,6 +166,7 @@ export default function MedicalProfilePage() {
         </button>
         {message && <p className={message.type === 'error' ? 'error' : 'message'}>{message.text}</p>}
       </form>
-    </section>
+      </section>
+    </div>
   );
 }

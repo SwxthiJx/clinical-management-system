@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { ChartNoAxesCombined } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import AnalyticsCharts from '../components/AnalyticsCharts.jsx';
+import PageHeader from '../components/PageHeader.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useAdminAnalytics } from '../hooks/useClinicQueries.js';
 import { formatDate } from '../utils/formatters.js';
@@ -16,6 +18,12 @@ export default function AnalyticsPage() {
 
   return (
     <div className="main-column">
+      <PageHeader
+        eyebrow="Insights"
+        title="Clinic analytics"
+        description="Track appointment demand, patient activity, cancellations, and schedule utilization."
+        icon={ChartNoAxesCombined}
+      />
       <section className="panel analytics-header">
         <div className="panel-heading">
           <div>
