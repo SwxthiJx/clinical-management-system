@@ -2643,3 +2643,211 @@ textarea:focus {
 .app-footer span {
   color: var(--primary-dark);
 }
+
+/* High-contrast brand treatment */
+body {
+  background:
+    linear-gradient(180deg, #eaf4f4 0, #f5f8fa 360px, #f5f8fa 100%);
+}
+
+.welcome-shell {
+  width: 100%;
+  max-width: none;
+  padding: 0 0 26px;
+}
+
+.welcome-brand,
+.welcome-intro,
+.role-choice-grid,
+.welcome-footer {
+  width: min(1160px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.welcome-brand {
+  width: 100%;
+  max-width: none;
+  min-height: 92px;
+  padding: 18px max(24px, calc((100% - 1160px) / 2));
+  background: #123d52;
+  color: #ffffff;
+  box-shadow: 0 8px 28px rgba(18, 61, 82, 0.15);
+}
+
+.welcome-brand > svg {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: none;
+}
+
+.welcome-brand span {
+  color: #b9d4dc;
+}
+
+.welcome-brand h1 {
+  color: #ffffff;
+}
+
+.welcome-intro {
+  padding: 34px 0 0;
+  border-top: 0;
+}
+
+.welcome-intro .eyebrow {
+  padding: 5px 9px;
+  border-radius: 5px;
+  background: #d8eee9;
+  color: var(--primary-dark);
+}
+
+.welcome-intro h2 {
+  max-width: 680px;
+  margin-top: 10px;
+}
+
+.role-choice {
+  position: relative;
+  border: 0;
+}
+
+.role-choice::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: var(--primary);
+}
+
+.role-patient::after {
+  background: var(--blue);
+}
+
+.role-admin::after {
+  background: var(--coral);
+}
+
+.role-choice-content {
+  min-height: 170px;
+}
+
+.role-choice-title svg {
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 7px;
+  background: var(--primary-soft);
+}
+
+.role-patient .role-choice-title svg {
+  background: var(--blue-soft);
+}
+
+.role-admin .role-choice-title svg {
+  background: var(--coral-soft);
+}
+
+.auth-shell {
+  background:
+    linear-gradient(135deg, rgba(15, 118, 110, 0.11), transparent 45%),
+    linear-gradient(315deg, rgba(37, 99, 169, 0.09), transparent 42%),
+    #eef4f6;
+}
+
+.app-shell {
+  padding-top: 0;
+}
+
+.topbar {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  min-height: 96px;
+  margin-left: -50vw;
+  margin-bottom: 22px;
+  padding: 18px max(20px, calc((100vw - 1220px) / 2));
+  background: #123d52;
+  box-shadow: 0 8px 28px rgba(18, 61, 82, 0.14);
+}
+
+.topbar .brand-row h1 {
+  color: #ffffff;
+}
+
+.topbar .brand-row p {
+  color: #b9d4dc;
+}
+
+.topbar .brand-row > svg {
+  background: #ffffff;
+  color: var(--primary);
+  box-shadow: none;
+}
+
+.topbar .profile-pill {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.topbar .profile-pill > svg {
+  color: #8dd3c8;
+}
+
+.topbar .profile-pill button {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.app-nav {
+  border: 0;
+  padding: 7px;
+  box-shadow: var(--shadow-md);
+}
+
+.welcome-panel {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+}
+
+.welcome-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--primary);
+}
+
+.panel,
+.healthy-living,
+.analytics-chart,
+.analytics-metric,
+.metric-row div {
+  border-color: transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 860px) {
+  .welcome-shell {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .welcome-brand,
+  .welcome-intro,
+  .role-choice-grid,
+  .welcome-footer {
+    width: min(620px, calc(100% - 28px));
+  }
+
+  .welcome-brand {
+    width: 100%;
+    padding-inline: 20px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    padding-inline: 20px;
+  }
+}
