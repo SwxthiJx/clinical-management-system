@@ -5,6 +5,8 @@ export const permissionsByRole = {
     'appointment:cancel-own',
     'appointment:reschedule-own',
     'consultation-note:read-own',
+    'medical-profile:read-own',
+    'medical-profile:write-own',
     'doctor:read'
   ]),
   doctor: new Set([
@@ -13,6 +15,7 @@ export const permissionsByRole = {
     'appointment:reschedule-assigned',
     'consultation-note:read-assigned',
     'consultation-note:write-assigned',
+    'medical-profile:read-assigned',
     'availability:manage-own',
     'doctor:read'
   ]),
@@ -23,6 +26,7 @@ export const permissionsByRole = {
     'appointment:cancel-any',
     'appointment:reschedule-any',
     'consultation-note:read-any',
+    'medical-profile:read-any',
     'availability:manage-any',
     'doctor:read',
     'doctor:create',

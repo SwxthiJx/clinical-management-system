@@ -50,6 +50,29 @@ export const openApiSpec = {
           },
           status: { type: 'string', enum: ['draft', 'finalized'] }
         }
+      },
+      PatientMedicalProfileInput: {
+        type: 'object',
+        required: ['age', 'bloodGroup', 'allergies', 'conditions', 'medications', 'emergencyContact'],
+        properties: {
+          age: { type: 'integer', minimum: 0, maximum: 130, nullable: true },
+          bloodGroup: {
+            type: 'string',
+            enum: ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown']
+          },
+          allergies: { type: 'array', maxItems: 30, items: { type: 'string', maxLength: 120 } },
+          conditions: { type: 'array', maxItems: 30, items: { type: 'string', maxLength: 120 } },
+          medications: { type: 'array', maxItems: 30, items: { type: 'string', maxLength: 120 } },
+          emergencyContact: {
+            type: 'object',
+            required: ['name', 'relationship', 'phone'],
+            properties: {
+              name: { type: 'string', maxLength: 100 },
+              relationship: { type: 'string', maxLength: 60 },
+              phone: { type: 'string', maxLength: 30 }
+            }
+          }
+        }
       }
     }
   },
@@ -215,6 +238,50 @@ export const openApiSpec = {
           { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
         ],
         responses: { 200: { description: 'User status updated' } }
+      }
+    },
+    '/users/me/medical-profile': {
+      get: {
+        tags: ['Users'],
+        summary: 'Get the current patient medical profile',
+        security: [{ cookieAuth: [] }],
+        responses: {
+          200: { description: 'Patient identity and medical profile' },
+          403: { description: 'Patient permission required' }
+        }
+      },
+      put: {
+        tags: ['Users'],
+        summary: 'Create or update the current patient medical profile',
+        security: [{ cookieAuth: [], csrf: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/PatientMedicalProfileInput' }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Medical profile saved' },
+          403: { description: 'Only patients can update their own medical profile' }
+        }
+      }
+    },
+    '/users/{id}/medical-profile': {
+      get: {
+        tags: ['Users'],
+        summary: 'Get an authorized patient medical profile',
+        description:
+          'Administrators may review any patient. Doctors may review only patients linked through a booked or completed appointment.',
+        security: [{ cookieAuth: [] }],
+        parameters: [
+          { in: 'path', name: 'id', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: { description: 'Patient identity and medical profile' },
+          403: { description: 'Patient is outside the current user scope' }
+        }
       }
     },
     '/availability': {

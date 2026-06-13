@@ -24,6 +24,8 @@ A full-stack appointment management system for patients, doctors, and administra
 - Conflict-safe appointment rescheduling with fresh reminders and participant notifications
 - Structured doctor consultation notes with draft/finalized workflows
 - Patient-safe clinical note viewing with doctor-only private fields
+- Secure patient medical profiles for allergies, conditions, medications, age, blood group, and emergency contacts
+- Appointment-scoped medical profile access for assigned doctors
 - Conflict-free appointment booking
 - Generated bookable slots from doctor availability
 - Schedule exceptions for blocked doctor dates
@@ -171,6 +173,15 @@ The machine-readable OpenAPI document is available at
 - `GET /api/users`
 - `POST /api/users/doctors`
 - `PATCH /api/users/:id/active`
+- `GET /api/users/me/medical-profile`
+- `PUT /api/users/me/medical-profile`
+- `GET /api/users/:id/medical-profile`
+
+Patient medical information is stored separately from general account records so it is
+not returned by user-list or authentication endpoints. Patients can update only their
+own profile. Doctors can read a profile only when they have a booked or completed
+appointment with that patient, while administrators have read-only access. Medical
+content is excluded from audit metadata.
 
 ### Appointments
 

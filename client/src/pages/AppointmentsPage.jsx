@@ -3,6 +3,7 @@ import AppointmentList from '../components/AppointmentList.jsx';
 import ConsultationNotePanel from '../components/ConsultationNotePanel.jsx';
 import DashboardWelcome from '../components/DashboardWelcome.jsx';
 import HealthyLivingGuide from '../components/HealthyLivingGuide.jsx';
+import MedicalProfileDetails from '../components/MedicalProfileDetails.jsx';
 import ReschedulePanel from '../components/ReschedulePanel.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import {
@@ -11,6 +12,7 @@ import {
   useClinicMutation,
   useConsultationNote,
   useDoctors,
+  useMedicalProfile,
   useUsers
 } from '../hooks/useClinicQueries.js';
 import { api } from '../api.js';
@@ -24,7 +26,9 @@ export default function AppointmentsPage() {
   const [rescheduleMessage, setRescheduleMessage] = useState('');
   const [noteAppointment, setNoteAppointment] = useState(null);
   const [noteMessage, setNoteMessage] = useState(null);
+  const [profilePatient, setProfilePatient] = useState(null);
   const consultationNote = useConsultationNote(noteAppointment?._id);
+  const medicalProfile = useMedicalProfile(profilePatient?._id);
   const cancelMutation = useClinicMutation({
     mutationFn: (id) => api(`/api/appointments/${id}/cancel`, { method: 'PATCH' }),
     invalidate: [queryKeys.appointments]
@@ -97,6 +101,7 @@ export default function AppointmentsPage() {
           setNoteAppointment(appointment);
           setNoteMessage(null);
         }}
+        onMedicalProfile={setProfilePatient}
       />
       {rescheduling && (
         <ReschedulePanel
@@ -122,6 +127,19 @@ export default function AppointmentsPage() {
           }}
           onSubmit={saveConsultationNote}
         />
+      )}
+      {profilePatient && (
+        <>
+          {medicalProfile.isLoading && <section className="panel"><p className="empty">Loading medical profile...</p></section>}
+          {medicalProfile.error && <section className="panel"><p className="error">{medicalProfile.error.message}</p></section>}
+          {!medicalProfile.isLoading && !medicalProfile.error && (
+            <MedicalProfileDetails
+              patient={medicalProfile.data?.patient || profilePatient}
+              profile={medicalProfile.data?.profile}
+              onClose={() => setProfilePatient(null)}
+            />
+          )}
+        </>
       )}
       <HealthyLivingGuide />
     </>

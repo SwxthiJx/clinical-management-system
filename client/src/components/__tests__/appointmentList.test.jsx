@@ -40,10 +40,12 @@ describe('AppointmentList consultation note actions', () => {
         onComplete={() => {}}
         onReschedule={() => {}}
         onConsultationNote={() => {}}
+        onMedicalProfile={() => {}}
       />
     );
 
     expect(screen.getByRole('button', { name: 'Add / edit notes' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Medical profile' })).toBeInTheDocument();
   });
 
   it('keeps a read-only notes action on cancelled appointments', () => {
@@ -55,6 +57,7 @@ describe('AppointmentList consultation note actions', () => {
         onComplete={() => {}}
         onReschedule={() => {}}
         onConsultationNote={() => {}}
+        onMedicalProfile={() => {}}
       />
     );
 

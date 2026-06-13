@@ -747,6 +747,15 @@ textarea {
   background: #d8e8f7;
 }
 
+.appointment-actions .medical-profile-action {
+  background: #eef8f5;
+  color: #11635e;
+}
+
+.appointment-actions .medical-profile-action:hover {
+  background: #dcefe9;
+}
+
 .reschedule-panel {
   display: grid;
   gap: 18px;
@@ -912,6 +921,141 @@ textarea {
 
 .consultation-empty p {
   line-height: 1.5;
+}
+
+.medical-profile-editor,
+.medical-profile-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.medical-profile-panel {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid #9bc9bb;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(23, 33, 43, 0.06);
+}
+
+.medical-profile-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.medical-profile-heading h2,
+.medical-profile-heading h3 {
+  margin: 4px 0 6px;
+}
+
+.medical-profile-heading > svg {
+  width: 38px;
+  height: 38px;
+  color: #16756f;
+}
+
+.medical-profile-editor .grid-form small {
+  color: #697782;
+  font-weight: 500;
+}
+
+.form-section-title {
+  padding-top: 6px;
+  border-top: 1px solid #e4ebef;
+}
+
+.form-section-title h3 {
+  margin: 10px 0 3px;
+  font-size: 1rem;
+}
+
+.form-section-title p {
+  font-size: 0.86rem;
+}
+
+.profile-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.profile-save svg {
+  width: 18px;
+  height: 18px;
+}
+
+.medical-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.medical-summary > div {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+  border: 1px solid #d7ebe5;
+  border-radius: 8px;
+  background: #f6faf9;
+}
+
+.medical-summary span,
+.medical-detail span {
+  color: #52616c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.medical-summary strong {
+  font-size: 1.25rem;
+}
+
+.medical-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.medical-detail {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #e4ebef;
+  border-radius: 8px;
+}
+
+.medical-detail > svg {
+  width: 20px;
+  height: 20px;
+  color: #16756f;
+}
+
+.medical-detail p {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.medical-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.medical-tags span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #edf2f5;
+  color: #465561;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: none;
 }
 
 .consultation-footer {
@@ -1314,8 +1458,14 @@ textarea {
   }
 
   .consultation-grid,
-  .consultation-note-details {
+  .consultation-note-details,
+  .medical-details-grid,
+  .medical-summary {
     grid-template-columns: 1fr;
+  }
+
+  .medical-profile-heading {
+    align-items: flex-start;
   }
 
   .audit-context {

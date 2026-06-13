@@ -16,7 +16,13 @@ const blockedKeys = new Set([
   'plan',
   'prescriptions',
   'followUpInstructions',
-  'privateNotes'
+  'privateNotes',
+  'allergies',
+  'conditions',
+  'medications',
+  'emergencyContact',
+  'bloodGroup',
+  'age'
 ]);
 
 function sanitize(value) {

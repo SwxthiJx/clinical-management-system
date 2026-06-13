@@ -10,6 +10,7 @@ export const queryKeys = {
   availability: (doctorId) => ['availability', doctorId],
   exceptions: (doctorId) => ['exceptions', doctorId],
   consultationNote: (appointmentId) => ['consultation-note', appointmentId],
+  medicalProfile: (patientId) => ['medical-profile', patientId],
   allSlots: ['slots'],
   slots: (doctorId, date) => ['slots', doctorId, date]
 };
@@ -29,6 +30,18 @@ export function useConsultationNote(appointmentId) {
         (data) => data.consultationNote
       ),
     enabled: Boolean(appointmentId)
+  });
+}
+
+export function useMedicalProfile(patientId) {
+  const path =
+    patientId === 'me'
+      ? '/api/users/me/medical-profile'
+      : `/api/users/${patientId}/medical-profile`;
+  return useQuery({
+    queryKey: queryKeys.medicalProfile(patientId),
+    queryFn: () => api(path),
+    enabled: Boolean(patientId)
   });
 }
 

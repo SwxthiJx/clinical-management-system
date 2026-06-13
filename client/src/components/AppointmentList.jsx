@@ -1,4 +1,4 @@
-import { CalendarSync, CheckCircle2, ClipboardPlus } from 'lucide-react';
+import { CalendarSync, CheckCircle2, ClipboardPlus, HeartPulse } from 'lucide-react';
 import { formatDateTime } from '../utils/formatters.js';
 
 export default function AppointmentList({
@@ -7,7 +7,8 @@ export default function AppointmentList({
   onCancel,
   onComplete,
   onReschedule,
-  onConsultationNote
+  onConsultationNote,
+  onMedicalProfile
 }) {
   const heading = user.role === 'admin' ? 'All appointments' : 'My appointments';
   return (
@@ -33,6 +34,16 @@ export default function AppointmentList({
                   ? 'Add / edit notes'
                   : 'View notes'}
               </button>
+              {(user.role === 'admin' ||
+                (user.role === 'doctor' && appointment.status !== 'cancelled')) && (
+                <button
+                  className="medical-profile-action"
+                  type="button"
+                  onClick={() => onMedicalProfile(appointment.patient)}
+                >
+                  <HeartPulse aria-hidden="true" />Medical profile
+                </button>
+              )}
               {appointment.status === 'booked' && (
                 <>
                   <button type="button" onClick={() => onReschedule(appointment)}>

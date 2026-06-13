@@ -6,6 +6,8 @@ import {
   consultationNoteSchema,
   rescheduleAppointmentSchema
 } from '../schemas/appointmentSchemas.js';
+import { patientMedicalProfileSchema } from '../schemas/userSchemas.js';
+import { presentPatientMedicalProfile } from '../services/patientMedicalProfileService.js';
 import { presentConsultationNote } from '../services/consultationNoteService.js';
 
 describe('appointment scheduling rules', () => {
@@ -52,6 +54,14 @@ describe('role permissions', () => {
     expect(hasPermission({ role: 'doctor' }, 'consultation-note:write-assigned')).toBe(true);
     expect(hasPermission({ role: 'patient' }, 'consultation-note:write-assigned')).toBe(false);
     expect(hasPermission({ role: 'admin' }, 'consultation-note:read-any')).toBe(true);
+  });
+
+  it('protects medical-profile access by role and scope', () => {
+    expect(hasPermission({ role: 'patient' }, 'medical-profile:write-own')).toBe(true);
+    expect(hasPermission({ role: 'patient' }, 'medical-profile:read-any')).toBe(false);
+    expect(hasPermission({ role: 'doctor' }, 'medical-profile:read-assigned')).toBe(true);
+    expect(hasPermission({ role: 'doctor' }, 'medical-profile:write-own')).toBe(false);
+    expect(hasPermission({ role: 'admin' }, 'medical-profile:read-any')).toBe(true);
   });
 });
 
@@ -172,5 +182,64 @@ describe('consultation note privacy and validation', () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe('patient medical profile validation', () => {
+  it('accepts a structured medical profile', () => {
+    const result = patientMedicalProfileSchema.safeParse({
+      body: {
+        age: 34,
+        bloodGroup: 'O+',
+        allergies: ['Penicillin'],
+        conditions: ['Asthma'],
+        medications: ['Salbutamol inhaler'],
+        emergencyContact: {
+          name: 'Anil Nair',
+          relationship: 'Spouse',
+          phone: '+91 98765 43210'
+        }
+      },
+      query: {},
+      params: {}
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid blood groups and excessive ages', () => {
+    const result = patientMedicalProfileSchema.safeParse({
+      body: {
+        age: 145,
+        bloodGroup: 'C+',
+        allergies: [],
+        conditions: [],
+        medications: [],
+        emergencyContact: { name: '', relationship: '', phone: '' }
+      },
+      query: {},
+      params: {}
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it('removes internal ownership fields from API responses', () => {
+    const presented = presentPatientMedicalProfile({
+      _id: 'profile-1',
+      patient: 'patient-1',
+      age: 34,
+      bloodGroup: 'O+',
+      allergies: [],
+      conditions: [],
+      medications: [],
+      emergencyContact: {},
+      updatedBy: 'patient-1',
+      __v: 0
+    });
+
+    expect(presented).not.toHaveProperty('patient');
+    expect(presented).not.toHaveProperty('updatedBy');
+    expect(presented).not.toHaveProperty('__v');
   });
 });

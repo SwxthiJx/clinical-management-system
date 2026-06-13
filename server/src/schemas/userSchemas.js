@@ -34,3 +34,35 @@ export const activeStatusSchema = z.object({
   query: z.object({}).passthrough(),
   params: z.object({ id: objectId })
 });
+
+const medicalList = z
+  .array(z.string().trim().min(1).max(120))
+  .max(30)
+  .transform((items) => [...new Set(items)]);
+
+export const patientMedicalProfileSchema = z.object({
+  body: z
+    .object({
+      age: z.coerce.number().int().min(0).max(130).nullable(),
+      bloodGroup: z.enum(['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown']),
+      allergies: medicalList,
+      conditions: medicalList,
+      medications: medicalList,
+      emergencyContact: z
+        .object({
+          name: z.string().trim().max(100),
+          relationship: z.string().trim().max(60),
+          phone: z.string().trim().max(30)
+        })
+        .strict()
+    })
+    .strict(),
+  query: z.object({}).passthrough(),
+  params: z.object({}).passthrough()
+});
+
+export const patientMedicalProfileIdSchema = z.object({
+  body: z.object({}).passthrough(),
+  query: z.object({}).passthrough(),
+  params: z.object({ id: objectId })
+});

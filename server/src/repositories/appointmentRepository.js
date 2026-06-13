@@ -13,6 +13,14 @@ export function findAppointmentById(id) {
   return Appointment.findById(id);
 }
 
+export function hasDoctorPatientRelationship({ doctorId, patientId }) {
+  return Appointment.exists({
+    doctor: doctorId,
+    patient: patientId,
+    status: { $in: ['booked', 'completed'] }
+  });
+}
+
 export function findIdempotentAppointment(patientId, idempotencyKey) {
   return Appointment.findOne({ patient: patientId, idempotencyKey }).populate(population);
 }
