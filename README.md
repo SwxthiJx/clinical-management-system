@@ -1,6 +1,7 @@
-# Clinic Appointment Scheduling System
+# Aarogya Care Hospital Management System
 
-deployed link-https://aarogya-care-jadg.onrender.com
+**Live application:** [https://aarogya-care-jadg.onrender.com](https://aarogya-care-jadg.onrender.com)<br>
+**API health check:** [https://aarogya-care-api.onrender.com/api/health](https://aarogya-care-api.onrender.com/api/health)
 
 A full-stack appointment management system for patients, doctors, and administrators.
 
@@ -11,6 +12,91 @@ A full-stack appointment management system for patients, doctors, and administra
 - React.js + Vite
 - JWT authentication
 - Role-based access control
+
+## System Design
+
+```mermaid
+flowchart LR
+    subgraph Users["Application users"]
+        Patient["Patient"]
+        Doctor["Doctor"]
+        Admin["Administrator"]
+    end
+
+    subgraph Frontend["Render static site"]
+        SPA["React + Vite SPA"]
+        Router["React Router"]
+        Query["TanStack Query cache"]
+        APIClient["Fetch client<br/>cookies + CSRF header"]
+        SPA --> Router
+        Router --> Query
+        Query --> APIClient
+    end
+
+    subgraph Backend["Render Node.js web service"]
+        Edge["Express middleware<br/>Helmet, CORS, rate limits,<br/>request IDs and validation"]
+        Auth["JWT authentication<br/>RBAC + CSRF protection"]
+        Routes["REST routes and controllers"]
+        Services["Domain services<br/>booking, slots, notes,<br/>profiles and analytics"]
+        Repositories["Repository layer"]
+        Scheduler["Reminder scheduler"]
+        Mail["Notification service<br/>Nodemailer"]
+
+        Edge --> Auth
+        Auth --> Routes
+        Routes --> Services
+        Services --> Repositories
+        Scheduler --> Services
+        Services --> Mail
+    end
+
+    subgraph Data["MongoDB Atlas"]
+        Mongo[("MongoDB")]
+        Collections["Users, appointments, schedules,<br/>medical profiles, notes,<br/>refresh tokens and audit logs"]
+        Mongo --- Collections
+    end
+
+    Email["SMTP email provider"]
+
+    Patient --> SPA
+    Doctor --> SPA
+    Admin --> SPA
+    APIClient -->|"HTTPS /api requests"| Edge
+    Repositories -->|"Mongoose queries"| Mongo
+    Scheduler -->|"Claims upcoming reminders"| Mongo
+    Mail -->|"Verification, reset,<br/>appointment and reminder emails"| Email
+```
+
+### Request Flow
+
+1. The React client uses React Router for role-aware navigation and TanStack Query for server-state caching.
+2. Requests are sent to `/api` with `HttpOnly` authentication cookies and a matching CSRF header for state-changing operations.
+3. Express applies security headers, rate limits, request tracing, authentication, authorization, CSRF checks, and Zod validation.
+4. Controllers delegate business rules to services; services use repositories so persistence remains separate from HTTP concerns.
+5. Mongoose repositories store operational, clinical, authentication, and audit data in MongoDB Atlas.
+6. The reminder scheduler safely claims upcoming appointments before the notification service sends email through SMTP.
+
+### Backend Layers
+
+```mermaid
+flowchart TD
+    Request["HTTP request"] --> Middleware["Security and validation middleware"]
+    Middleware --> Controller["Controller"]
+    Controller --> Service["Domain service"]
+    Service --> Repository["Repository"]
+    Repository --> Database[("MongoDB Atlas")]
+    Service --> Audit["Audit service"]
+    Service --> Notification["Notification service"]
+    Notification --> SMTP["SMTP provider"]
+    Controller --> Response["JSON response"]
+```
+
+### Resume Highlights
+
+- Engineered a full-stack hospital appointment platform using React, Express, Node.js, MongoDB, and a layered controller-service-repository architecture.
+- Implemented secure JWT cookie authentication, rotating refresh tokens, CSRF protection, permission-based access control, rate limiting, and persistent audit logs.
+- Designed conflict-safe scheduling with generated doctor slots, idempotent booking, rescheduling, consultation notes, medical profiles, analytics, and automated email reminders.
+- Deployed the React frontend and Node.js API on Render with MongoDB Atlas persistence, health monitoring, structured logs, OpenAPI documentation, and automated tests.
 
 ## Features
 
